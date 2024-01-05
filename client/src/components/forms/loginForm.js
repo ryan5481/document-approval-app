@@ -7,7 +7,6 @@ import { assignUserRole, setLoginDetails } from '../../redux/reducers/userSlice'
 // import 'react-simple-toasts/dist/theme/light.css';
 const baseUrl = process.env.REACT_APP_BASE_URL
 
-
 export default function LoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -29,6 +28,7 @@ export default function LoginForm() {
       [name]: value,
     }))
   }
+  
   //SUBMIT FORM
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -61,6 +61,7 @@ export default function LoginForm() {
       //   toast(errorMessage, { position: 'top-center', theme: 'light' });
     }
   };
+
   return (
     <div className="flex min-h-screen justify-center items-center p-24 w-full bg-blue-300">
       {/* LOGO */}
@@ -108,7 +109,7 @@ export default function LoginForm() {
                 id="password"
                 name='password'
                 required={true}
-                value={formData.name}
+                value={formData.password}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-10"
                 placeholder="••••••••••••"
               />

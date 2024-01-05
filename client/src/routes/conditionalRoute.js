@@ -1,4 +1,4 @@
-import {Navigate, Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import '../App.css';
 
@@ -33,6 +33,8 @@ const SuperAdminRoutes = () => {
         <Route path="/" element={<Submissions />} />
         <Route path="/create-user" element={<SignupUserForm />} />
         <Route path="/Initiate" element={<Initiate />} />
+        <Route path="/submissions" element={<Submissions />} />
+        
         <Route path="/*" element={<PageNotFound />} />
       </Routes>
     </>
@@ -45,6 +47,7 @@ const AdminRoutes = () => {
       <Routes >
         <Route path="/" element={<Submissions />} />
         <Route path="/initiate" element={<Initiate />} />
+        <Route path="/submissions" element={<Submissions />} />
       </Routes>
     </>
   )
@@ -56,6 +59,7 @@ const InitiatorRoutes = () => {
       <Routes>
       <Route path="/" element={<Submissions />} />
       <Route path="/initiate" element={<Initiate />} />
+      <Route path="/submissions" element={<Submissions />} />
       </Routes>
     </>
   )
