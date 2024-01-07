@@ -3,6 +3,7 @@ import { FaEye } from "react-icons/fa";
 import { BiSolidArchiveIn } from "react-icons/bi";
 //MODAL CONTENTS
 import { Editor, EditorState, convertFromRaw } from 'draft-js';
+import { FaFilePdf } from "react-icons/fa";
 
 const baseUrl = process.env.REACT_APP_BASE_URL
 
@@ -18,7 +19,7 @@ function Submissions() {
       });
       if (res.status === 200) {
         const data = await res.json()
-        setSubmissionsList(data.foundData)
+        setSubmissionsList(data.foundData.reverse())
       }
     } catch {
       console.log("Error")
@@ -62,11 +63,16 @@ function Submissions() {
     }
   };
 
-//MODAL CONTENTS
-//convert JSON to Draft.js content
-// const contentState = convertFromRaw(JSON.parse(selectedSubmission?.comment));
-// const editorState = EditorState.createWithContent(contentState);
-// console.log(selectedSubmission?.comment)
+  //MODAL CONTENTS
+  //convert JSON to Draft.js content
+  const contentState = selectedSubmission?.comment
+    ? convertFromRaw(JSON.parse(selectedSubmission.comment))
+    : null;
+
+  const editorState = contentState
+    ? EditorState.createWithContent(contentState)
+    : EditorState.createEmpty();
+
 
   return (
     <div className='flex flex-col justify-center items-center  m-5' >
@@ -103,23 +109,29 @@ function Submissions() {
         >Archive</a>
       </div>
       {/* DATA LIST */}
-      {submissionsList && submissionsList.map((item, index) => (
-        <div
-          key={index}
-          className='w-[1200px] flex flex-cols-5 items-center bg-white border-b-[1px] border-l-[1px] border-r-[1px] text-sm text-gray-900 cursor-pointer'
-        >
-          <a className='p-2  w-10 border-r-[1px]' >{index + 1}</a>
-          <a className='p-2 w-96 border-r-[1px]' >{item.title}</a>
-          <a className='p-2 w-48 border-r-[1px]' >{item.initiatorName}</a>
-          <a className='p-2 w-48 border-r-[1px]' >{item?.inspectors?.name}</a>
-          <a className='p-2 w-48 border-r-[1px]' >{item?.approved == true ? "Yes" : "No"}</a>
+      {submissionsList &&
+        submissionsList.length > 0 ?
+        (submissionsList.map((item, index) => (
           <div
-            className='p-2 w-16 flex items-center justify-center border-r-[1px]'
-            onClick={() => toggleModalOn(item)}
-          ><FaEye /> </div>
-          <div className='p-2 w-16 flex items-center justify-center' ><BiSolidArchiveIn /></div>
-        </div>
-      ))
+            key={index}
+            className='w-[1200px] flex flex-cols-5 items-center bg-white border-b-[1px] border-l-[1px] border-r-[1px] text-sm text-gray-900 cursor-pointer'
+          >
+            <a className='p-2  w-10 border-r-[1px]' >{index + 1}</a>
+            <a className='p-2 w-96 border-r-[1px]' >{item.title}</a>
+            <a className='p-2 w-48 border-r-[1px]' >{item.initiatorName}</a>
+            <a className='p-2 w-48 border-r-[1px]' >{item?.inspectors?.name}</a>
+            <a className='p-2 w-48 border-r-[1px]' >{item?.approved == true ? "Yes" : "No"}</a>
+            <div
+              className='p-2 w-16 flex items-center justify-center border-r-[1px]'
+              onClick={() => toggleModalOn(item)}
+            ><FaEye /> </div>
+            <div className='p-2 w-16 flex items-center justify-center' ><BiSolidArchiveIn /></div>
+          </div>
+        )))
+        :
+        (<div className='p-5'>
+          No Data
+        </div>)
       }
 
 
@@ -130,18 +142,18 @@ function Submissions() {
           onClick={toggleModalOff}
         ></div>
       )}
-      
+
       {/* MODAL */}
       {selectedSubmission &&
         <div
           ref={modalRef}
           id="extralarge-modal"
           tabindex="-1"
-          className="fixed top-1/2 left-1/2 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+          className="fixed top-1/2 left-1/2  z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
         >
           <div className="relative w-full max-w-7xl max-h-full">
             {/* MODAL CONTENT --> */}
-            <div className="relative bg-white rounded-lg shadow">
+            <div className="relative bg-white rounded-lg shadow px-5">
               {/* MODAL HEADER */}
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
                 <h3 className="flex items-center justify-center text-xl font-medium text-gray-900 ">
@@ -160,10 +172,22 @@ function Submissions() {
               </div>
               {/* MODAL BODY */}
               <div className="p-4 md:p-5 space-y-4">
-                <p className="text-base leading-relaxed text-gray-500 ">
-                  {selectedSubmission.comment}
+                <p className="text-2xl leading-relaxed text-black font-bold">
+                  {selectedSubmission.title}
                 </p>
-                {/* <Editor editorState={editorState} readOnly={true} /> */}
+                <div className='flex flex-row gap-2'>
+                <a
+                  onClick={() => window.open(`/uploads/documentPdfs/${selectedSubmission.pdfFile}`, '_blank')}
+                  className='inline-block  p-1 py-2 bg-gray-100 hover:bg-gray-200 rounded-md group'
+                >
+                  <FaFilePdf
+                    size={60}
+                    className='text-red-500 group-hover:text-red-600'
+                  />
+                </a>
+                
+                </div>
+                <Editor editorState={editorState} readOnly={true} />
 
               </div>
               {/* MODAL FOOTER */}
