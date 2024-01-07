@@ -1,8 +1,7 @@
-"use client"
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom'
 import toast from 'react-simple-toasts';
-import 'react-simple-toasts/dist/theme/light.css';
+const baseUrl = process.env.REACT_APP_BASE_URL
 
 
 export default function SignupUserForm() {
@@ -10,7 +9,7 @@ export default function SignupUserForm() {
   //PASSWORD VISIBLITY
   const [showPassword, setShowPassword] = useState(false);
   // const [userType, setUserType] = useState('user');
-  const [formData, setFormData] = useState({userRole: "user"});
+  const [formData, setFormData] = useState({userRole: "user" });
   const [errorMessage, setErrorMessage] = useState('');
 
   const togglePasswordVisibility = () => {
@@ -28,32 +27,33 @@ export default function SignupUserForm() {
   //SUBMIT FORM
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrorMessage("")
     try {
-      let endpoint;
-      const res = await fetch("/api/Users", {
+      const res = await fetch(`${baseUrl}/signup`, {
         method: "POST",
-        body: JSON.stringify({ formData }),
-        "contect-type": "application/json"
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json"
+        }
       })
-      if (!res.ok) {
+      if (res.status == 200) {
         const response = await res.json()
-        setErrorMessage(response).message
+        navigate("/")
       } else {
-        // router.refresh()
-        // router.push("/")
+        console.log("An error occoured.")
       }
 
     } catch (error) {
-      toast(errorMessage, { position: 'top-center', theme: 'light' });
+      console.log(error)
+      //   toast(errorMessage, { position: 'top-center', theme: 'light' });
     }
   };
+
   return (
     <main className="flex min-h-screen justify-center items-center p-24 w-full bg-blue-300">
       {/* LOGO */}
       <div className='flex flex-col w-80 items-center justify-center bg-white p-5 rounded-lg shadow-lg'>
         <div className='relative flex items-center justify-center mb-2 h-14 w-80'>
-          <Image
+          <img
             src={`/uploads/logo/1.jpeg`}
             height={1000}
             width={1000}

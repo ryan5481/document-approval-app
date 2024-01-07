@@ -4,6 +4,7 @@
 /client/.next
 /client/.env
 /client/build
+/client/public/uploads
 
 /server/.env
 /server/node_modules
