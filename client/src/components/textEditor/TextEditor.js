@@ -21,7 +21,7 @@ const TextEditor = () => {
         blocks: [
           {
             key: "3eesq",
-            text: "A Text-editor with super cool features built in Draft.js.",
+            text: "Comment here",
             type: "unstyled",
             depth: 0,
             inlineStyleRanges: [
@@ -43,16 +43,7 @@ const TextEditor = () => {
             ],
             entityRanges: [],
             data: {},
-          },
-          {
-            key: "9adb5",
-            text: "Tell us a story!",
-            type: "header-one",
-            depth: 0,
-            inlineStyleRanges: [],
-            entityRanges: [],
-            data: {},
-          },
+          }
         ],
         entityMap: {},
       })
@@ -140,7 +131,7 @@ const TextEditor = () => {
   //FORM COMPONENTS
   const { fullName, id } = useSelector(state => state.user)
   const [selectedPdfFile, setSelectedPdfFile] = useState(null);
-  const [comment, setComment] = useState(null);
+  const [contentStateJSON, setContentStateJSON] = useState(null);
   const [title, setTitle] = useState(null);
 
   const handleFileSelect = (event) => {
@@ -155,7 +146,7 @@ const TextEditor = () => {
         formData.append('pdfFile', selectedPdfFile, selectedPdfFile.name);
       }
       formData.append('title', title);
-      formData.append('comment', comment);
+      formData.append('comment', contentStateJSON);
       formData.append('initiatorName', fullName);
       formData.append('initiatorId', id);
   
@@ -212,9 +203,11 @@ const TextEditor = () => {
               customStyleMap={styleMap}
               blockStyleFn={myBlockStyleFn}
               onChange={(editorState) => {
-                const contentState = editorState.getCurrentContent();
-                setComment(JSON.stringify(contentState));
                 setEditorState(editorState);
+                const contentState = editorState.getCurrentContent();
+                const contentStateJSON = convertToRaw(contentState);
+                setContentStateJSON(JSON.stringify(contentStateJSON));
+                console.log(JSON.stringify(contentStateJSON, null, 2)); // Use null and 2 for pretty printing
 
               }}
             />
