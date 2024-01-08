@@ -3,13 +3,22 @@ import { useNavigate } from 'react-router-dom'
 import toast from 'react-simple-toasts';
 const baseUrl = process.env.REACT_APP_BASE_URL
 
+const departmentsList = [
+  "Dept A",
+  "Dept B",
+  "Dept C",
+  "Dept D",
+  "Dept E",
+  "Dept F",
+]
+
 
 export default function SignupUserForm() {
   const navigate = useNavigate();
   //PASSWORD VISIBLITY
   const [showPassword, setShowPassword] = useState(false);
   // const [userType, setUserType] = useState('user');
-  const [formData, setFormData] = useState({userRole: "user" });
+  const [formData, setFormData] = useState({ userRole: "user", department: departmentsList[0] || "Not assigned" });
   const [errorMessage, setErrorMessage] = useState('');
 
   const togglePasswordVisibility = () => {
@@ -18,7 +27,7 @@ export default function SignupUserForm() {
 
   //HANDLE INPUTS
   const handleChange = (e) => {
-    const {name, value} = e.target
+    const { name, value } = e.target
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -49,7 +58,7 @@ export default function SignupUserForm() {
   };
 
   return (
-    <main className="flex min-h-screen justify-center items-center p-24 w-full bg-blue-300">
+    <main className="flex py-16 justify-center items-center  w-full bg-blue-300">
       {/* LOGO */}
       <div className='flex flex-col w-80 items-center justify-center bg-white p-5 rounded-lg shadow-lg'>
         <div className='relative flex items-center justify-center mb-2 h-14 w-80'>
@@ -74,11 +83,33 @@ export default function SignupUserForm() {
             id="userRole"
             name="userRole"
             value={formData.userRole}
-             className="bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" >
+            className="bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" >
             <option value="user" >USER</option>
             <option value="initiator">INITIATOR</option>
             <option value="admin" style={{ color: 'red', fontWeight: 'bold' }}>ADMIN</option>
           </select>
+          {/* ASSIGN DEPARTMENT FOR normal USER*/}
+          {formData.userRole === 'user' && (
+            <>
+              {/* DEPARTMENT */}
+              <label htmlFor="userType" className="block mb-2 text-sm font-medium text-gray-900">
+                Department
+              </label>
+              <select
+                onChange={handleChange}
+                id="department"
+                name="department"
+                value={formData.department}
+                className="bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              >
+                {departmentsList.map((dept, index) => (
+                  <option value={dept}>
+                    {dept}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
           {/* NAME */}
           <label htmlFor="email-address-icon" className="block mb-2 text-sm font-medium text-gray-900">Full Name</label>
           <div className="relative  mb-3">
@@ -96,6 +127,7 @@ export default function SignupUserForm() {
               value={formData.fullName}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 -5  " placeholder="Full Name" />
           </div>
+
           {/* EMAIL */}
           <label htmlFor="email-address-icon" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
           <div className="relative  mb-3">
