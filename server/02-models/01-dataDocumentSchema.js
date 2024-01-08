@@ -10,6 +10,14 @@ const dataDocumentSchema = ({
         type: String,
     },
 
+    firstAssigneeId: {
+        type: String,
+    },
+
+    firstAssigneeName: {
+        type: String,
+    },
+
     inspectors: {
         type: Object,
     },
@@ -27,6 +35,10 @@ const dataDocumentSchema = ({
     },
     
     pdfFile: {
+        type: String,
+    },
+
+    fileTitle: {
         type: String,
     },
 

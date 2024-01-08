@@ -10,7 +10,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL
 
 function Submissions() {
 
-  //GET DATA ARRAY
+  //GET SUBMISSIONS LIST
   const [submissionsList, setSubmissionsList] = useState([])
   const getSubmissions = async () => {
     try {
@@ -85,27 +85,29 @@ function Submissions() {
           className={`w-200 p-2 w-96 ${textMouseStates.title ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('title')}
           onMouseUp={() => handleMouseUp('title')}
+          onMouseLeave={() => handleMouseUp('title')}
         >Title</a>
         <a
           className={`p-2 w-48 border-r-[1px] ${textMouseStates.initiatedOn ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('initiatedOn')}
           onMouseUp={() => handleMouseUp('initiatedOn')}
+          onMouseLeave={() => handleMouseUp('initiatedOn')}
         >Initiated on</a>
         <a className={`p-2 w-48 border-r-[1px] ${textMouseStates.inspectedOn ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('inspectedOn')}
           onMouseUp={() => handleMouseUp('inspectedOn')}
+          onMouseLeave={() => handleMouseUp('inspectedOn')}
+
         >Inspected on</a>
         <a className={`p-2 w-48 border-r-[1px] ${textMouseStates.approved ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('approved')}
           onMouseUp={() => handleMouseUp('approved')}
+          onMouseLeave={() => handleMouseUp('approved')}
+
         >Approved</a>
         <a className='p-2 w-16 border-r-[1px]'
-          onMouseDown={() => handleMouseDown('initiatedOn')}
-          onMouseUp={() => handleMouseUp('initiatedOn')}
         >View</a>
         <a className='p-2 w-16'
-          onMouseDown={() => handleMouseDown('initiatedOn')}
-          onMouseUp={() => handleMouseUp('initiatedOn')}
         >Archive</a>
       </div>
       {/* DATA LIST */}
@@ -122,9 +124,9 @@ function Submissions() {
             <a className='p-2 w-48 border-r-[1px]' >{item?.inspectors?.name}</a>
             <a className='p-2 w-48 border-r-[1px]' >{item?.approved == true ? "Yes" : "No"}</a>
             <div
-              className='p-2 w-16 flex items-center justify-center border-r-[1px]'
+              className='p-2 w-16 flex items-center justify-center border-r-[1px] group'
               onClick={() => toggleModalOn(item)}
-            ><FaEye /> </div>
+            ><FaEye className='group-hover:text-blue-500' /> </div>
             <div className='p-2 w-16 flex items-center justify-center' ><BiSolidArchiveIn /></div>
           </div>
         )))
@@ -134,8 +136,7 @@ function Submissions() {
         </div>)
       }
 
-
-      {/* BACKDROP */}
+      {/* MODAL BACKDROP */}
       {isModalOpen && (
         <div
           className="fixed top-0 left-0 right-0 bottom-0 bg-black opacity-50 z-40"
@@ -156,9 +157,11 @@ function Submissions() {
             <div className="relative bg-white rounded-lg shadow px-5">
               {/* MODAL HEADER */}
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                <div className='w-full flex items-center justify-center' >
                 <h3 className="flex items-center justify-center text-xl font-medium text-gray-900 ">
-                  Inspect document
+                  View case
                 </h3>
+                </div>
                 <button
                   type="button"
                   className="text-red-500 bg-gray-100 hover:bg-red-500 hover:text-white rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="extralarge-modal"
@@ -171,24 +174,51 @@ function Submissions() {
                 </button>
               </div>
               {/* MODAL BODY */}
-              <div className="p-4 md:p-5 space-y-4">
-                <p className="text-2xl leading-relaxed text-black font-bold">
-                  {selectedSubmission.title}
-                </p>
-                <div className='flex flex-row gap-2'>
-                <a
-                  onClick={() => window.open(`/uploads/documentPdfs/${selectedSubmission.pdfFile}`, '_blank')}
-                  className='inline-block  p-1 py-2 bg-gray-100 hover:bg-gray-200 rounded-md group'
-                >
-                  <FaFilePdf
-                    size={60}
-                    className='text-red-500 group-hover:text-red-600'
-                  />
-                </a>
-                
-                </div>
-                <Editor editorState={editorState} readOnly={true} />
 
+              <div className="p-4 md:p-5 space-y-4">
+                {/* TITLE */}
+                <div className='flex flex-row items-center  gap-2'>
+                  <a className="leading-relaxed text-black font-bold min-w-40">
+                    Case title:
+                  </a>
+                  <a className="leading-relaxed text-black font-bold">
+                    {selectedSubmission.title}
+                  </a>
+                </div>
+
+                {/* PDF FILES */}
+                <div className='flex flex-row gap-2'>
+                  {/* PDF FILE */}
+                  <a className="leading-relaxed text-black font-bold min-w-40">
+                    Files uploaded:
+                  </a>
+                  <div
+                    onClick={() => window.open(`/uploads/documentPdfs/${selectedSubmission.pdfFile}`, '_blank')}
+                    className='flex flex-col items-center justify-center p-1 py-2 bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer group'
+                  >
+                    <FaFilePdf
+                      size={60}
+                      className='text-red-500 group-hover:text-red-600'
+                    />
+                    <a className='text-xs p-1 text-gray-700 group-hover:text-black' >
+                      {selectedSubmission.fileTitle}
+                    </a>
+                  </div>
+                </div>
+                <div className='flex flex-row gap-2'>
+                <a className="leading-relaxed text-black font-bold min-w-40">
+                    Files uploaded:
+                  </a>
+                  <Editor editorState={editorState} readOnly={true} />
+                </div>
+              </div>
+              {/* INITIATION DETAILS */}
+              <div className='flex flex-col border-t border-gray-200 p-5'>
+                <div className='flex flex-row gap-5' >
+                  <a>Initiated by: {selectedSubmission.initiatorName}</a>
+                  <a>Initiated on: {new Date(selectedSubmission.createdAt).toLocaleString()}</a>
+                  <a>First assigned to: {selectedSubmission.firstAssigneeName}</a>
+                </div>
               </div>
               {/* MODAL FOOTER */}
               <div className="flex items-center justify-center p-4 md:p-5 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b">
