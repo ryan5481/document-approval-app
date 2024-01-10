@@ -8,6 +8,8 @@ import Initiate from '../pages/02-Initiate.js';
 import Submissions from '../pages/03-Submissions.js';
 import PageNotFound from '../pages/99-notFound.js';
 import SignupUserForm from '../components/forms/signupUserForm.js';
+import MainThread from '../components/comment/MainThread.js';
+import Inspect from '../pages/04-inspect.js';
 
 
 
@@ -30,12 +32,12 @@ const SuperAdminRoutes = () => {
   return (
     <>
       <Routes >
-        <Route path="/" element={<Submissions />} />
+        {/* <Route path="/" element={<Submissions />} /> */}
         <Route path="/create-user" element={<SignupUserForm />} />
         <Route path="/Initiate" element={<Initiate />} />
         <Route path="/submissions" element={<Submissions />} />
+        <Route path="/inspect/:id" element={<Inspect />} />
         
-        <Route path="/*" element={<PageNotFound />} />
       </Routes>
     </>
   )
@@ -45,9 +47,12 @@ const AdminRoutes = () => {
   return (
     <>
       <Routes >
-        <Route path="/" element={<Submissions />} />
+        {/* <Route path="/" element={<Submissions />} /> */}
         <Route path="/initiate" element={<Initiate />} />
         <Route path="/submissions" element={<Submissions />} />
+        <Route path="/inspect/:id" element={<Inspect />} />
+
+        <Route path="/comment" element={<Inspect />} />
       </Routes>
     </>
   )
@@ -60,6 +65,8 @@ const InitiatorRoutes = () => {
       <Route path="/" element={<Submissions />} />
       <Route path="/initiate" element={<Initiate />} />
       <Route path="/submissions" element={<Submissions />} />
+
+      <Route path="/thread" element={<MainThread />} />
       </Routes>
     </>
   )
@@ -70,6 +77,9 @@ const UserRoutes = () => {
     <>
       <Routes>
       <Route path="/" element={<Submissions />} />
+      <Route path="/inspect/:id" element={<Inspect />} />
+
+      <Route path="/thread" element={<MainThread />} />
       </Routes>
     </>
   )
@@ -81,6 +91,8 @@ const NonUserRoutes = () => {
       <Routes>
         <Route path="/*" element={<Navigate to="/" />} />
         <Route path="/" element={<Login />} />
+
+        <Route path="/thread" element={<MainThread />} />
       </Routes>
     </>
   )

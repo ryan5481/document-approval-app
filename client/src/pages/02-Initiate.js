@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import TextEditor from '../components/textEditor/TextEditor'
+import MyEditor from '../components/textEditor/TextEditor';
 
 function Initiate({ contentInJSON }) {
 
 
   return (
     <div>
-      <TextEditor />
+      <MyEditor />
     </div>
   )
 }
