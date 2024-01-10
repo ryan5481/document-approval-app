@@ -62,6 +62,23 @@ const GetDataDocuments = async (req, res) => {
   }
 }
 
+const GetOneDataById = async (req, res) => {
+  try {
+      const data = await DataDocument.findById(req.params.id);
+      if (data) {
+          res.status(200).json({
+            data
+          });
+      } else {
+          res.status(401).json({ msg: "Error" });
+      }
+  } catch (error) {
+      console.error("Error", error);
+      return res.status(500).json({ msg: "Internal server error." });
+  }
+}
+
 exports.InitiateDocument = InitiateDocument
 exports.GetDataDocuments = GetDataDocuments
+exports.GetOneDataById = GetOneDataById
 

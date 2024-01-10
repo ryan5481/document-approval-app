@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import { BiSolidArchiveIn } from "react-icons/bi";
 //MODAL CONTENTS
@@ -9,7 +10,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL
 
 
 function Submissions() {
-
+  const navigate = useNavigate()
   //GET SUBMISSIONS LIST
   const [submissionsList, setSubmissionsList] = useState([])
   const getSubmissions = async () => {
@@ -222,9 +223,14 @@ function Submissions() {
               </div>
               {/* MODAL FOOTER */}
               <div className="flex items-center justify-center p-4 md:p-5 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b">
-                <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button>
-                <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Save Inspection</button>
-                <button data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10">Reject</button>
+                {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
+                <button 
+                onClick={() => navigate(`/inspect/${selectedSubmission._id}`)}
+                data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                >Inspect</button>
+                <button 
+                data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
+                >Close</button>
               </div>
             </div>
           </div>
