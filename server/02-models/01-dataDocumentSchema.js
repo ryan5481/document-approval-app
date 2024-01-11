@@ -42,6 +42,27 @@ const dataDocumentSchema = ({
         type: String,
     },
 
+
+    initiated: {
+        type: Number,
+        default: 1
+        //Need initiated === 1, conditional confirmation to start a thread for other users to start commenting
+    },
+
+    //COMMENTS
+    items: [
+        {
+            id: {
+                type: Number,
+                required: true
+            },
+            
+            name: {
+                type: Object,
+                required: true
+            }
+        }
+    ],
     createdAt: { type: Date, default: Date.now },
     
     updatedAt: { type: Date, default: Date.now },

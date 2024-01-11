@@ -12,7 +12,7 @@ import Toolbar from "./toolbar/toolbar";
 import "./TextEditor.css";
 const baseUrl = process.env.REACT_APP_BASE_URL
 
-const TextEditor = () => {
+const InitiateCase = () => {
   //EDITOR COMPONENTS
   const [editorState, setEditorState] = useState(
     EditorState.createWithContent(
@@ -48,10 +48,8 @@ const TextEditor = () => {
       })
     )
   );
-  const [contentInJSON, setContentInJSON] = useState({})
   const editor = useRef(null);
   //FORM COMPONENTS
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({});
 
   //EDITOR COMPONENTS
@@ -149,7 +147,7 @@ const TextEditor = () => {
       }
       formData.append('fileTitle', fileTitle);
       formData.append('title', title);
-      formData.append('comment', contentStateJSON);
+      formData.append('instruction', contentStateJSON);
       formData.append('initiatorName', fullName);
       formData.append('initiatorId', id);
       formData.append('firstAssigneeId', firstAssigneeId);
@@ -161,7 +159,7 @@ const TextEditor = () => {
       });
 
       if (res.status === 200) {
-        const response = await res.json();
+        // const response = await res.json();
         // navigate("/submissions");
       } else {
         console.log("An error occurred.");
@@ -298,7 +296,7 @@ const TextEditor = () => {
               Department:
             </label>
             <select
-            required={true}
+              required={true}
               onChange={(e) => setSelectedDept(e.target.value)}
               className="bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-xs focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
@@ -315,7 +313,7 @@ const TextEditor = () => {
               User:
             </label>
             <select
-            required={true}
+              required={true}
               onChange={(e) => setFirstAssigneeId(e.target.value) || filteredUsers[0]?._id}
               className="bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-xs focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
@@ -335,4 +333,4 @@ const TextEditor = () => {
   );
 };
 
-export default TextEditor;
+export default InitiateCase;

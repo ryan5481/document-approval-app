@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import { BiSolidArchiveIn } from "react-icons/bi";
@@ -66,8 +67,8 @@ function Submissions() {
 
   //MODAL CONTENTS
   //convert JSON to Draft.js content
-  const contentState = selectedSubmission?.comment
-    ? convertFromRaw(JSON.parse(selectedSubmission.comment))
+  const contentState = selectedSubmission?.instruction
+    ? convertFromRaw(JSON.parse(selectedSubmission.instruction))
     : null;
 
   const editorState = contentState
@@ -159,9 +160,9 @@ function Submissions() {
               {/* MODAL HEADER */}
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
                 <div className='w-full flex items-center justify-center' >
-                <h3 className="flex items-center justify-center text-xl font-medium text-gray-900 ">
-                  View case
-                </h3>
+                  <h3 className="flex items-center justify-center text-xl font-medium text-gray-900 ">
+                    View case
+                  </h3>
                 </div>
                 <button
                   type="button"
@@ -187,28 +188,29 @@ function Submissions() {
                   </a>
                 </div>
 
-                {/* PDF FILES */}
                 <div className='flex flex-row gap-2'>
                   {/* PDF FILE */}
                   <a className="leading-relaxed text-black font-bold min-w-40">
                     Files uploaded:
                   </a>
-                  <div
-                    onClick={() => window.open(`/uploads/documentPdfs/${selectedSubmission.pdfFile}`, '_blank')}
-                    className='flex flex-col items-center justify-center p-1 py-2 bg-gray-100 hover:bg-gray-200 rounded-md cursor-pointer group'
-                  >
-                    <FaFilePdf
-                      size={60}
-                      className='text-red-500 group-hover:text-red-600'
-                    />
-                    <a className='text-xs p-1 text-gray-700 group-hover:text-black' >
-                      {selectedSubmission.fileTitle}
-                    </a>
+                  <div className='fl' >
+                    <div
+                      onClick={() => window.open(`/uploads/documentPdfs/${selectedSubmission.pdfFile}`, '_blank')}
+                      className='flex flex-col items-center justify-center p-1 py-2 bg-white hover:bg-gray-200 rounded-md cursor-pointer group'
+                    >
+                      <FaFilePdf
+                        size={60}
+                        className='text-red-500 group-hover:text-red-600'
+                      />
+                      <a className='text-xs p-1 text-gray-700 group-hover:text-black' >
+                        {selectedSubmission.fileTitle}
+                      </a>
+                    </div>
                   </div>
                 </div>
                 <div className='flex flex-row gap-2'>
-                <a className="leading-relaxed text-black font-bold min-w-40">
-                    Files uploaded:
+                  <a className="leading-relaxed text-black font-bold min-w-40">
+                    Instruction:
                   </a>
                   <Editor editorState={editorState} readOnly={true} />
                 </div>
@@ -224,12 +226,12 @@ function Submissions() {
               {/* MODAL FOOTER */}
               <div className="flex items-center justify-center p-4 md:p-5 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b">
                 {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
-                <button 
-                onClick={() => navigate(`/inspect/${selectedSubmission._id}`)}
-                data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                <button
+                  onClick={() => navigate(`/inspect/${selectedSubmission._id}`)}
+                  data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 >Inspect</button>
-                <button 
-                data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
+                <button
+                  data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
                 >Close</button>
               </div>
             </div>

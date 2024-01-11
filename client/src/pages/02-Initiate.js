@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import MyEditor from '../components/textEditor/TextEditor';
+import InitiateCase from '../components/textEditor/initiateCase';
 
 function Initiate({ contentInJSON }) {
 
 
   return (
     <div>
-      <MyEditor />
+      <InitiateCase />
     </div>
   )
 }

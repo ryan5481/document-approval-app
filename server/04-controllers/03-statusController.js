@@ -1,33 +1,10 @@
-const DataDocument = require("../02-models/01-dataDocumentSchema")
 const StatusModel = require("../02-models/03-statusSchema")
-const User = require("../02-models/00-userSchema")
 const dotenv = require("dotenv");
 dotenv.config();
 
-const InitiateDocument = async (req, res) => {
+const PostStatus = async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({
-                msg: "File not received."
-            });
-        }
-
-        // Get the name of the first asignee from User model using _id received form req.body
-        const firstAssignee = await User.findById(req.body.firstAssigneeId);
-
-        if (!firstAssignee) {
-            return res.status(404).json({
-                msg: "First assignee not found."
-            });
-        }
-
-        const reqInclFile = {
-            ...req.body,
-            pdfFile: req.file.filename,
-            firstAssigneeName: firstAssignee.fullName
-        };
-
-        const data = await StatusModel.create(reqInclFile);
+        const data = await StatusModel.create(req.body);
 
         if (data) {
             res.status(200).json({
@@ -45,14 +22,14 @@ const InitiateDocument = async (req, res) => {
 };
 
 
-const GetSubmissions = async (req, res) => {
+const GetStatuses = async (req, res) => {
   try {
      
-      const foundData = await StatusModel.find();
+      const data = await StatusModel.find();
 
-      if (foundData) {
+      if (data) {
           res.status(200).json({
-            foundData
+            data
           });
       } else {
           res.status(401).json({ msg: "Error" });
@@ -63,7 +40,7 @@ const GetSubmissions = async (req, res) => {
   }
 }
 
-const GetASubmissionById = async (req, res) => {
+const GetStatusById = async (req, res) => {
   try {
       const data = await StatusModel.findById(req.params.id);
       if (data) {
@@ -112,7 +89,9 @@ const AddComment = async (req, res) => {
     }
 };
 
-exports.InitiateDocument = InitiateDocument
-exports.GetSubmissions = GetSubmissions
-exports.GetASubmissionById = GetASubmissionById
+
+exports.PostStatus = PostStatus
+exports.GetStatuses = GetStatuses
+exports.GetStatusById = GetStatusById
 exports.AddComment = AddComment
+
