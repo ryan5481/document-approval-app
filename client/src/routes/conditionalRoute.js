@@ -73,6 +73,7 @@ const InitiatorRoutes = () => {
       <Routes>
       <Route path="/" element={<Submissions />} />
       <Route path="/initiate" element={<Initiate />} />
+      <Route path="/inspect/:id" element={<Inspect />} />
       <Route path="/submissions" element={<Submissions />} />
 
       <Route path="/status" element={<Status />} />
@@ -89,6 +90,7 @@ const UserRoutes = () => {
       <Route path="/" element={<Submissions />} />
       <Route path="/inspect/:id" element={<Inspect />} />
       <Route path="/inspect-case/:id" element={<InspectCase />} />
+      <Route path="/submissions" element={<Submissions />} />
 
 
       <Route path="/status" element={<Status />} />

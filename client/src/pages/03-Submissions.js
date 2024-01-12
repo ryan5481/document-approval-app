@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react'
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import { BiSolidArchiveIn } from "react-icons/bi";
@@ -77,14 +76,14 @@ function Submissions() {
 
 
   return (
-    <div className='flex flex-col justify-center items-center  m-5' >
+    <div className='flex flex-col justify-top items-center p-5 bg-slate-700 min-h-screen' >
       {/* TABLE HEADER */}
-      <div className='w-[1200px] flex flex-cols-5 items-center bg-blue-500 font-bold text-white cursor-pointer' >
+      <div className='w-[1200px] flex flex-cols-5 items-center bg-blue-500 font-bold text-white rounded-t-lg cursor-pointer' >
         <a
           className='p-2 w-10 border-r-[1px]'
         >SN</a>
         <a
-          className={`w-200 p-2 w-96 ${textMouseStates.title ? clickedBackgroundColor : originalBackgroundColor}`}
+          className={`w-200 p-2 w-96 border-r-[1px] ${textMouseStates.title ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('title')}
           onMouseUp={() => handleMouseUp('title')}
           onMouseLeave={() => handleMouseUp('title')}
@@ -113,16 +112,18 @@ function Submissions() {
         >Archive</a>
       </div>
       {/* DATA LIST */}
+      
       {submissionsList &&
         submissionsList.length > 0 ?
-        (submissionsList.map((item, index) => (
+        (
+          submissionsList.map((item, index) => (
           <div
             key={index}
-            className='w-[1200px] flex flex-cols-5 items-center bg-white border-b-[1px] border-l-[1px] border-r-[1px] text-sm text-gray-900 cursor-pointer'
+            className={`w-[1200px] flex flex-cols-5 items-center bg-white border-b-[1px] border-l-[1px] border-r-[1px] text-sm text-gray-900 cursor-pointer ${index === submissionsList.length - 1 ? 'rounded-b-lg' : ''}`}
           >
             <a className='p-2  w-10 border-r-[1px]' >{index + 1}</a>
             <a className='p-2 w-96 border-r-[1px]' >{item.title}</a>
-            <a className='p-2 w-48 border-r-[1px]' >{item.initiatorName}</a>
+            <a className='p-2 w-48 border-r-[1px]' >{new Date(item.createdAt).toLocaleString()}</a>
             <a className='p-2 w-48 border-r-[1px]' >{item?.inspectors?.name}</a>
             <a className='p-2 w-48 border-r-[1px]' >{item?.approved == true ? "Yes" : "No"}</a>
             <div
@@ -131,7 +132,8 @@ function Submissions() {
             ><FaEye className='group-hover:text-blue-500' /> </div>
             <div className='p-2 w-16 flex items-center justify-center' ><BiSolidArchiveIn /></div>
           </div>
-        )))
+        ))
+        )
         :
         (<div className='p-5'>
           No Data

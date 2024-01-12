@@ -5,6 +5,22 @@ const commentSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
+
+  InspectorId: {
+    type: String,
+    required: true,
+  },
+
+  createdAt: { 
+    type: Date,
+     default: Date.now 
+    },
+      
+  updatedAt: {
+     type: Date,
+      default: Date.now 
+    },
+
 });
 
 const statusSchema = new mongoose.Schema({
@@ -50,9 +66,22 @@ instruction: {
   type: Object,
 },
 
-////////// COMMENTS ////////
+createdAt: { 
+  type: Date,
+   default: Date.now 
+  },
+    
+updatedAt: {
+   type: Date,
+    default: Date.now 
+  },
+
+  ////////// COMMENTS ////////
   comments: [commentSchema],
-});
+
+})
+
+
 
 const StatusModel = mongoose.model('Status', statusSchema);
 

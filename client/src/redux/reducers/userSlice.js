@@ -4,7 +4,7 @@ export const initialState = {
   userRole: '',
   isLoggedIn: false,
   token: '',
-  id: '',
+  userDbId: '',
   email: '',
   fullName: '',
   commentsAdded: {}
@@ -19,9 +19,9 @@ const userSlice = createSlice({
     },
     setLoginDetails: (state, actions) => {
       if (actions.payload) {
-        const { token, id, email, fullName, commentsAdded } = actions.payload
+        const { token, userDbId, email, fullName, commentsAdded } = actions.payload
         state.token = token
-        state.id = id
+        state.userDbId = userDbId
         state.email = email
         state.fullName = fullName
         state.commentsAdded = commentsAdded
@@ -32,7 +32,7 @@ const userSlice = createSlice({
     resetLoginDetails: (state) => {
       state.userRole = ''
       state.token = ''
-      state.id = ''
+      state.userDbId = ''
       state.email = ''
       state.fullName = ''
       state.commentsAdded = {}

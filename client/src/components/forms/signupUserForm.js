@@ -71,7 +71,7 @@ export default function SignupUserForm() {
           />
         </div>
         {/* TITLE */}
-        <div className='font-bold text-blue-500 text-[20px] items-center justify-center w-full p-1' >User Regstration Form</div>
+        <div className='flex font-bold text-slate-900 text-[20px] items-center justify-center w-full p-1' >User Regstration Form</div>
         <form
           onSubmit={handleSubmit}
           className="w-full mx-auto"
