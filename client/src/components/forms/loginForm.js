@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { assignUserRole, setLoginDetails } from '../../redux/reducers/userSlice'
 
 // import toast from 'react-simple-toasts';
@@ -46,7 +46,7 @@ export default function LoginForm() {
         dispatch(
           setLoginDetails({
             isLoggedIn: true,
-            id: response.id,
+            userDbId: response.id,
             email: response.email,
             fullName: response.fullName,
           })
@@ -58,31 +58,30 @@ export default function LoginForm() {
 
     } catch (error) {
       console.log(error)
-      //   toast(errorMessage, { position: 'top-center', theme: 'light' });
     }
   };
 
   return (
-    <div className="flex min-h-screen justify-center items-center p-24 w-full bg-blue-300">
+    <div className="flex min-h-screen justify-center items-center p-24 w-full bg-slate-900">
       {/* LOGO */}
       <div className='flex flex-col w-80 items-center justify-center bg-white p-5 rounded-lg shadow-lg'>
-        <div className='relative flex items-center justify-center mb-2 h-14 w-80'>
-          {/* <Image
+      <div className='relative flex items-center justify-center mb-2 h-14 w-80'>
+          <img
             src={`/uploads/logo/1.jpeg`}
             height={1000}
             width={1000}
             alt='logo'
             className='absolute rounded-lg h-full w-full object-contain'
-          /> */}
+          />
         </div>
         {/* TITLE */}
-        <div className='font-bold text-blue-500 text-[20px] items-center justify-center w-full p-1' >User Login</div>
+        <div className='flex font-bold text-slate-900 text-[20px] items-center justify-center w-full p-1' >User Login</div>
         <form
           onSubmit={handleSubmit}
           className="w-full mx-auto"
         >
           {/* EMAIL */}
-          <label htmlFor="email-address-icon" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
+          <label htmlFor="email-address-icon" className="block mb-2 text-sm font-medium text-slate-900">Email</label>
           <div className="relative  mb-3">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
               <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">

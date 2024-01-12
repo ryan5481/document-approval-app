@@ -126,7 +126,7 @@ const InitiateCase = () => {
   };
 
   //FORM COMPONENTS
-  const { fullName, id } = useSelector(state => state.user)
+  const { userDbId } = useSelector(state => state.user)
   const [selectedPdfFile, setSelectedPdfFile] = useState(null);
   const [contentStateJSON, setContentStateJSON] = useState(null);
   const [title, setTitle] = useState(null);
@@ -148,8 +148,7 @@ const InitiateCase = () => {
       formData.append('fileTitle', fileTitle);
       formData.append('title', title);
       formData.append('instruction', contentStateJSON);
-      formData.append('initiatorName', fullName);
-      formData.append('initiatorId', id);
+      formData.append('initiatorId', userDbId);
       formData.append('firstAssigneeId', firstAssigneeId);
 
       const res = await fetch(`${baseUrl}/initiate`, {
@@ -208,10 +207,15 @@ const InitiateCase = () => {
 
 
   return (
-    <div className="w-full flex justify-center bg-gray-400" >
+    <div className="w-full flex justify-center bg-slate-800 min-h-screen" >
+      
       <form
-        className="flex flex-col justify-center gap-2 bg-gray-100 p-5"
+        className="flex flex-col justify-top gap-2 bg-gray-100 p-5"
         onSubmit={handleSubmit}>
+          <label
+          className="flex w-full items-center justify-center mb-2 text-2xl font-bold text-gray-900">
+          Initiate Case
+        </label>
         <label
           className="block mb-2 text-md font-bold text-gray-900">
           Task details

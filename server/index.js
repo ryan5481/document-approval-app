@@ -4,8 +4,7 @@ const cors = require("cors");
 require('dotenv').config()
 
 const userRoutes = require("./05-routes/00-userRoutes.js")
-const dataDocumentRoutes = require("./05-routes/01-documentFileRoutes.js")
-const commentRoutes = require("./05-routes/03-statusRoutes.js")
+const documentRoutes = require("./05-routes/01-documentFileRoutes.js")
 
 
 const connectDb = require('./01-database/connectDB.js');
@@ -20,8 +19,7 @@ app.use(cors());
 
 //USER
 app.use("/", userRoutes)
-app.use("/", dataDocumentRoutes)
-app.use("/", commentRoutes)
+app.use("/", documentRoutes)
 
 //ADMIN
 

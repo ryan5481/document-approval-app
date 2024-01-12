@@ -1,4 +1,3 @@
-const DataDocument = require("../02-models/01-dataDocumentSchema")
 const StatusModel = require("../02-models/03-statusSchema")
 const User = require("../02-models/00-userSchema")
 const dotenv = require("dotenv");
@@ -48,7 +47,7 @@ const InitiateDocument = async (req, res) => {
 const GetSubmissions = async (req, res) => {
   try {
      
-      const foundData = await StatusModel.find();
+      const foundData = await StatusModel.find()
 
       if (foundData) {
           res.status(200).json({
@@ -65,7 +64,12 @@ const GetSubmissions = async (req, res) => {
 
 const GetASubmissionById = async (req, res) => {
   try {
-      const data = await StatusModel.findById(req.params.id);
+      const data = await StatusModel.findById(req.params.id)
+      .populate({
+        path: "comments.InspectorId",
+        model: "User",
+        select: "fullName department userRole",
+      })
       if (data) {
           res.status(200).json({
             data
@@ -82,7 +86,7 @@ const GetASubmissionById = async (req, res) => {
 const AddComment = async (req, res) => {
     try {
         const id = req.params.id;
-        const { commentText } = req.body;
+        const { commentText, InspectorId } = req.body;
 
         if (!commentText) {
             return res.status(400).json({ msg: "No valid comment text provided." });
@@ -90,7 +94,7 @@ const AddComment = async (req, res) => {
 
         const updated = await StatusModel.findByIdAndUpdate(
             id,
-            { $push: { comments: { commentText } } },
+            { $push: { comments: { commentText, InspectorId } } },
             { new: true } 
         );
 
