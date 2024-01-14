@@ -28,6 +28,10 @@ const Navbar = () => {
                 label: "Submissions",
                 href: "/submissions",
             },
+            {
+                label: "Settings",
+                href: "/settings",
+            },
         ]
     } else if (userRole === 'admin') {
         menuItems = [
