@@ -2,12 +2,13 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import { BiSolidArchiveIn } from "react-icons/bi";
+import { IoMdArrowDropdown,IoMdArrowDropup } from "react-icons/io";
 //MODAL CONTENTS
 import { Editor, EditorState, convertFromRaw } from 'draft-js';
 import { FaFilePdf } from "react-icons/fa";
 
 const baseUrl = process.env.REACT_APP_BASE_URL
-
+const itemsPerPage = 10;
 
 function Submissions() {
   const navigate = useNavigate()
@@ -40,7 +41,7 @@ function Submissions() {
   const handleMouseUp = (id) => {
     setTextMouseStates({ ...textMouseStates, [id]: false });
   };
-  const originalBackgroundColor = 'bg-blue-500';
+  const originalBackgroundColor = 'bg-blue-600';
   const clickedBackgroundColor = 'bg-blue-700';
 
   //DETAIL MODAL
@@ -74,54 +75,117 @@ function Submissions() {
     ? EditorState.createWithContent(contentState)
     : EditorState.createEmpty();
 
+ // SORTING
+ const [sortColumn, setSortColumn] = useState('');
+ const [sortOrder, setSortOrder] = useState('asc');
+   // Arrow direction state
+   const [arrowDirection, setArrowDirection] = useState('down');
 
+   const handleSort = (column) => {
+    if (column === sortColumn) {
+      setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortColumn(column);
+      setSortOrder('asc');
+    }
+
+    // Toggle arrow direction
+    setArrowDirection((prevDirection) => (prevDirection === 'down' ? 'up' : 'down'));
+  };
+
+ // PAGINATION
+ const [currentPage, setCurrentPage] = useState(1);
+ const totalPages = Math.ceil(submissionsList.length / itemsPerPage);
+
+ const startIndex = (currentPage - 1) * itemsPerPage;
+ const endIndex = startIndex + itemsPerPage;
+
+ // Sorting logic
+ const sortedList = [...submissionsList].sort((a, b) => {
+   const aValue = a[sortColumn];
+   const bValue = b[sortColumn];
+
+   if (sortOrder === 'asc') {
+     return aValue > bValue ? 1 : -1;
+   } else {
+     return aValue < bValue ? 1 : -1;
+   }
+ });
+
+ const paginatedList = sortedList.slice(startIndex, endIndex);
+
+ const handlePreviousPage = () => {
+   if (currentPage > 1) {
+     setCurrentPage((prev) => prev - 1);
+   }
+ };
+
+ const handleNextPage = () => {
+   if (currentPage < totalPages) {
+     setCurrentPage((prev) => prev + 1);
+   }
+ };
   return (
     <div className='flex flex-col justify-top items-center p-5 bg-slate-700 min-h-screen' >
       {/* TABLE HEADER */}
-      <div className='w-[1200px] flex flex-cols-5 items-center bg-blue-500 font-bold text-white rounded-t-lg cursor-pointer' >
+      <div className='w-[1200px] flex flex-cols-5 items-center bg-blue-600 font-bold text-white rounded-t-lg cursor-pointer' >
         <a
           className='p-2 w-10 border-r-[1px]'
         >SN</a>
+      <a
+        className={`flex items-center justify-between w-200 p-2 w-96 border-r-[1px] ${sortColumn === 'title' ? clickedBackgroundColor : originalBackgroundColor}`}
+        onMouseDown={() => handleMouseDown('title')}
+        onMouseUp={() => handleMouseUp('title')}
+        onMouseLeave={() => handleMouseUp('title')}
+        onClick={() => handleSort('title')}
+      >
+        <span>Title</span>
+        {sortColumn === 'title' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
+      </a>
         <a
-          className={`w-200 p-2 w-96 border-r-[1px] ${textMouseStates.title ? clickedBackgroundColor : originalBackgroundColor}`}
-          onMouseDown={() => handleMouseDown('title')}
-          onMouseUp={() => handleMouseUp('title')}
-          onMouseLeave={() => handleMouseUp('title')}
-        >Title</a>
-        <a
-          className={`p-2 w-48 border-r-[1px] ${textMouseStates.initiatedOn ? clickedBackgroundColor : originalBackgroundColor}`}
+          className={`flex items-center justify-between p-2 w-48 border-r-[1px] ${textMouseStates.initiatedOn ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('initiatedOn')}
           onMouseUp={() => handleMouseUp('initiatedOn')}
           onMouseLeave={() => handleMouseUp('initiatedOn')}
-        >Initiated on</a>
-        <a className={`p-2 w-48 border-r-[1px] ${textMouseStates.inspectedOn ? clickedBackgroundColor : originalBackgroundColor}`}
+          onClick={() => handleSort('createdAt')}
+        >
+          <span>Initiated On</span>  
+          {sortColumn === 'createdAt' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
+        </a>
+        <a className={`flex items-center justify-between p-2 w-48 border-r-[1px] ${textMouseStates.inspectedOn ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('inspectedOn')}
           onMouseUp={() => handleMouseUp('inspectedOn')}
           onMouseLeave={() => handleMouseUp('inspectedOn')}
+          onClick={() => handleSort('comments.createdOn')}
 
-        >Inspected on</a>
-        <a className={`p-2 w-48 border-r-[1px] ${textMouseStates.approved ? clickedBackgroundColor : originalBackgroundColor}`}
+        >
+          <span>Inspected On</span> 
+          {sortColumn === 'comments?.CreatedAt' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
+        </a>
+        <a className={`flex items-center justify-between p-2 w-48 border-r-[1px] ${textMouseStates.approved ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('approved')}
           onMouseUp={() => handleMouseUp('approved')}
           onMouseLeave={() => handleMouseUp('approved')}
-
-        >Approved</a>
+          onClick={() => handleSort('approved')}
+        >
+          <span>Approved</span>
+          {sortColumn === 'approved' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
+        </a>
         <a className='p-2 w-16 border-r-[1px]'
         >View</a>
         <a className='p-2 w-16'
         >Archive</a>
       </div>
       {/* DATA LIST */}
-      
-      {submissionsList &&
-        submissionsList.length > 0 ?
-        (
-          submissionsList.map((item, index) => (
+      {paginatedList &&
+        paginatedList.length > 0 ? (
+        paginatedList.map((item, index) => (
           <div
             key={index}
-            className={`w-[1200px] flex flex-cols-5 items-center bg-white border-b-[1px] border-l-[1px] border-r-[1px] text-sm text-gray-900 cursor-pointer ${index === submissionsList.length - 1 ? 'rounded-b-lg' : ''}`}
+            className={`w-[1200px] flex flex-cols-5 items-center bg-white border-b-[1px] border-l-[1px] border-r-[1px] text-sm text-gray-900 cursor-pointer
+              ${index === paginatedList.length - 1 ? 'rounded-b-lg' : ''}`}
           >
-            <a className='p-2  w-10 border-r-[1px]' >{index + 1}</a>
+            <a className='flex items-center justify-center p-2 w-10 border-r-[1px]' >{index + 1}</a>
             <a className='p-2 w-96 border-r-[1px]' >{item.title}</a>
             <a className='p-2 w-48 border-r-[1px]' >{new Date(item.createdAt).toLocaleString()}</a>
             <a className='p-2 w-48 border-r-[1px]' >{item?.inspectors?.name}</a>
@@ -133,7 +197,7 @@ function Submissions() {
             <div className='p-2 w-16 flex items-center justify-center' ><BiSolidArchiveIn /></div>
           </div>
         ))
-        )
+      )
         :
         (<div className='p-5'>
           No Data
@@ -239,6 +303,35 @@ function Submissions() {
             </div>
           </div>
         </div>}
+      {/* PAGINATION */}
+      <div className='absoulte inline-flex m-2'>
+        <button
+          className={`flex items-center justify-center min-w-20 text-white bg-blue-600 hover:bg-blue-700 px-5 rounded-l-full rounded-r-sm ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <button
+            key={i}
+            className={`flex items-center justify-center min-w-10 text-white  hover:bg-blue-700 rounded-sm ${currentPage === i + 1 ? 'bg-blue-500' : 'bg-blue-600'
+              }`}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button
+          className={`flex items-center justify-center min-w-20 text-white bg-blue-600 hover:bg-blue-700 px-5 rounded-r-full rounded-l-sm ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
     </div>
   )
 }
