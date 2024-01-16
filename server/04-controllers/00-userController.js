@@ -19,6 +19,7 @@ const Login = async (req, res) => {
           id: foundUser._id,
           fullName: foundUser.fullName,
           email: foundUser.email,
+          department: foundUser.department,
           userRole: foundUser.userRole,
         })
       } else {

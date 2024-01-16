@@ -5,7 +5,7 @@ import { resetLoginDetails } from '../../redux/reducers/userSlice'
 import { TbLogout } from "react-icons/tb";
 
 const Navbar = () => {
-    const { isLoggedIn, userRole, fullName } = useSelector(state => state.user)
+    const { isLoggedIn, userRole, fullName, userDept } = useSelector(state => state.user)
     const dispatch = useDispatch();
     const location = useLocation();
 
@@ -95,13 +95,16 @@ const Navbar = () => {
                         {/* LOGIN */}
                         {isLoggedIn &&
                             <div className='flex flex-row items-center gap-4 text-white'>
-                                <div className='flex flex-col'>
+                                <div className='flex flex-col gap-1'>
                                     <div className='text-xs' >{fullName}</div>
-                                    <a className='mt-1 text-green-500 text-sm font-bold'>{userRole.replace(/([a-z])([A-Z])/g, '$1 $2').charAt(0).toUpperCase() + userRole.replace(/([a-z])([A-Z])/g, '$1 $2').slice(1)}</a>
+                                    <div className='flex flex-row gap-1 items-center justify-start' >
+                                    <a className=' text-green-500 text-xs font-bold'>{userRole.replace(/([a-z])([A-Z])/g, '$1 $2').charAt(0).toUpperCase() + userRole.replace(/([a-z])([A-Z])/g, '$1 $2').slice(1)}</a>
+                                    <div className='text-xs text-red-500' >{userDept}</div>
+                                    </div>
                                 </div>
                                 <div
                                     onClick={() => dispatch(resetLoginDetails())}
-                                    className='flex items-center justify-centertext-white  hover:bg-red-500 p-1 h-full rounded-lg cursor-pointer'
+                                    className='flex items-center justify-centertext-white  hover:text-red-500 p-1 h-full rounded-lg cursor-pointer'
                                 >
                                     <TbLogout
                                         size={25}
