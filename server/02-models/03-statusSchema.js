@@ -41,6 +41,10 @@ firstAssigneeName: {
     type: String,
 },
 
+firstAssigneeDept: {
+    type: String,
+},
+
 inspectors: {
     type: Object,
 },

@@ -47,6 +47,7 @@ export default function LoginForm() {
           setLoginDetails({
             isLoggedIn: true,
             userDbId: response.id,
+            userDept: response.department,
             email: response.email,
             fullName: response.fullName,
           })

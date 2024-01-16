@@ -13,6 +13,7 @@ const InitiateDocument = async (req, res) => {
 
         // Get the name of the first asignee from User model using _id received form req.body
         const firstAssignee = await User.findById(req.body.firstAssigneeId);
+        console.log(firstAssignee)
 
         if (!firstAssignee) {
             return res.status(404).json({
@@ -23,7 +24,8 @@ const InitiateDocument = async (req, res) => {
         const reqInclFile = {
             ...req.body,
             pdfFile: req.file.filename,
-            firstAssigneeName: firstAssignee.fullName
+            firstAssigneeName: firstAssignee.fullName,
+            firstAssigneeDept: firstAssignee?.department
         };
 
         const data = await StatusModel.create(reqInclFile);

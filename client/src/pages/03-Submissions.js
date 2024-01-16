@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import { BiSolidArchiveIn } from "react-icons/bi";
-import { IoMdArrowDropdown,IoMdArrowDropup } from "react-icons/io";
+import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
+import { useSelector } from 'react-redux'
 //MODAL CONTENTS
 import { Editor, EditorState, convertFromRaw } from 'draft-js';
 import { FaFilePdf } from "react-icons/fa";
@@ -11,6 +12,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL
 const itemsPerPage = 10;
 
 function Submissions() {
+  const { userRole, userDept } = useSelector(state => state.user)
   const navigate = useNavigate()
   //GET SUBMISSIONS LIST
   const [submissionsList, setSubmissionsList] = useState([])
@@ -31,7 +33,14 @@ function Submissions() {
     getSubmissions()
   }, [])
 
-  //STYLING
+  //If userRole === "user", DISPLAY LIST ASSIGNED TO logged in user's department only 
+    const filteredSubmissionsListByUserRole = userRole === 'user'
+    ? submissionsList.filter(item => item.firstAssigneeDept === userDept)
+    : submissionsList;
+
+    console.log(filteredSubmissionsListByUserRole)
+
+  //COLUMN HEADING STYLING
   //CHANGE TABLE HEADER ITEMS BG COLOR ON CLICK
   // Create an object to track the mouse state for each Text element
   const [textMouseStates, setTextMouseStates] = useState({});
@@ -75,13 +84,13 @@ function Submissions() {
     ? EditorState.createWithContent(contentState)
     : EditorState.createEmpty();
 
- // SORTING
- const [sortColumn, setSortColumn] = useState('');
- const [sortOrder, setSortOrder] = useState('asc');
-   // Arrow direction state
-   const [arrowDirection, setArrowDirection] = useState('down');
+  // SORTING
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
+  // Arrow direction state
+  const [arrowDirection, setArrowDirection] = useState('down');
 
-   const handleSort = (column) => {
+  const handleSort = (column) => {
     if (column === sortColumn) {
       setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
     } else {
@@ -93,55 +102,62 @@ function Submissions() {
     setArrowDirection((prevDirection) => (prevDirection === 'down' ? 'up' : 'down'));
   };
 
- // PAGINATION
- const [currentPage, setCurrentPage] = useState(1);
- const totalPages = Math.ceil(submissionsList.length / itemsPerPage);
+  // PAGINATION
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(filteredSubmissionsListByUserRole.length / itemsPerPage);
 
- const startIndex = (currentPage - 1) * itemsPerPage;
- const endIndex = startIndex + itemsPerPage;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
 
- // Sorting logic
- const sortedList = [...submissionsList].sort((a, b) => {
-   const aValue = a[sortColumn];
-   const bValue = b[sortColumn];
+  // Sorting logic
+  const sortedList = [...filteredSubmissionsListByUserRole].sort((a, b) => {
+    const aValue = a[sortColumn];
+    const bValue = b[sortColumn];
 
-   if (sortOrder === 'asc') {
-     return aValue > bValue ? 1 : -1;
-   } else {
-     return aValue < bValue ? 1 : -1;
-   }
- });
+    if (sortOrder === 'asc') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
+  });
 
- const paginatedList = sortedList.slice(startIndex, endIndex);
+  const paginatedList = sortedList.slice(startIndex, endIndex);
 
- const handlePreviousPage = () => {
-   if (currentPage > 1) {
-     setCurrentPage((prev) => prev - 1);
-   }
- };
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
 
- const handleNextPage = () => {
-   if (currentPage < totalPages) {
-     setCurrentPage((prev) => prev + 1);
-   }
- };
-  return (
-    <div className='flex flex-col justify-top items-center p-5 bg-slate-700 min-h-screen' >
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+  return (<div className="bg-slate-700 p-2">
+    <div className='flex flex-col items-center justify-center text-white text-[18px] font-bold' >
+      {(userRole === "admin" || userRole === "superAdmin" || userRole === "initiator") ?
+      ("All Tasks") : (`Tasks Assigned To ${userDept} Department`)}
+      </div>
+    <div className={`flex flex-col justify-top items-center p-5 min-h-screen
+    ${(userRole === "admin" || userRole === "superAdmin" || userRole === "initiator") ? ("flex-cols-7") : ("flex-cols-6")}
+    `} >
       {/* TABLE HEADER */}
-      <div className='w-[1200px] flex flex-cols-5 items-center bg-blue-600 font-bold text-white rounded-t-lg cursor-pointer' >
+      <div className={`w-[1200px] flex  items-center bg-blue-600 font-bold text-white rounded-t-lg cursor-pointer
+      `} >
         <a
           className='p-2 w-10 border-r-[1px]'
         >SN</a>
-      <a
-        className={`flex items-center justify-between w-200 p-2 w-96 border-r-[1px] ${sortColumn === 'title' ? clickedBackgroundColor : originalBackgroundColor}`}
-        onMouseDown={() => handleMouseDown('title')}
-        onMouseUp={() => handleMouseUp('title')}
-        onMouseLeave={() => handleMouseUp('title')}
-        onClick={() => handleSort('title')}
-      >
-        <span>Title</span>
-        {sortColumn === 'title' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
-      </a>
+        <a
+          className={`flex items-center justify-between w-200 p-2 w-96 border-r-[1px] ${sortColumn === 'title' ? clickedBackgroundColor : originalBackgroundColor}`}
+          onMouseDown={() => handleMouseDown('title')}
+          onMouseUp={() => handleMouseUp('title')}
+          onMouseLeave={() => handleMouseUp('title')}
+          onClick={() => handleSort('title')}
+        >
+          <span>Title</span>
+          {sortColumn === 'title' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
+        </a>
         <a
           className={`flex items-center justify-between p-2 w-48 border-r-[1px] ${textMouseStates.initiatedOn ? clickedBackgroundColor : originalBackgroundColor}`}
           onMouseDown={() => handleMouseDown('initiatedOn')}
@@ -149,7 +165,7 @@ function Submissions() {
           onMouseLeave={() => handleMouseUp('initiatedOn')}
           onClick={() => handleSort('createdAt')}
         >
-          <span>Initiated On</span>  
+          <span>Initiated On</span>
           {sortColumn === 'createdAt' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
         </a>
         <a className={`flex items-center justify-between p-2 w-48 border-r-[1px] ${textMouseStates.inspectedOn ? clickedBackgroundColor : originalBackgroundColor}`}
@@ -157,9 +173,8 @@ function Submissions() {
           onMouseUp={() => handleMouseUp('inspectedOn')}
           onMouseLeave={() => handleMouseUp('inspectedOn')}
           onClick={() => handleSort('comments.createdOn')}
-
         >
-          <span>Inspected On</span> 
+          <span>Inspected On</span>
           {sortColumn === 'comments?.CreatedAt' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
         </a>
         <a className={`flex items-center justify-between p-2 w-48 border-r-[1px] ${textMouseStates.approved ? clickedBackgroundColor : originalBackgroundColor}`}
@@ -171,10 +186,12 @@ function Submissions() {
           <span>Approved</span>
           {sortColumn === 'approved' && (arrowDirection === 'down' ? <IoMdArrowDropdown /> : <IoMdArrowDropup />)}
         </a>
-        <a className='p-2 w-16 border-r-[1px]'
+        <a className={`p-2 w-16 ${(userRole === "admin" || userRole === "superAdmin" || userRole === "initiator") ? ("border-r-[1px]") : (null)}`}
         >View</a>
-        <a className='p-2 w-16'
-        >Archive</a>
+        {/* SHOW ARCHIVE BUTTON TO ADMINS AND INITIATOR ONLY */}
+        {(userRole === "admin" || userRole === "superAdmin" || userRole === "initiator") &&
+          <a className='p-2 w-16'
+          >Archive</a>}
       </div>
       {/* DATA LIST */}
       {paginatedList &&
@@ -191,10 +208,13 @@ function Submissions() {
             <a className='p-2 w-48 border-r-[1px]' >{item?.inspectors?.name}</a>
             <a className='p-2 w-48 border-r-[1px]' >{item?.approved == true ? "Yes" : "No"}</a>
             <div
-              className='p-2 w-16 flex items-center justify-center border-r-[1px] group'
+              className={`p-2 w-16 flex items-center justify-center group ${(userRole === "admin" || userRole === "superAdmin" || userRole === "initiator") ? ("border-r-[1px]") : (null)}`}
               onClick={() => toggleModalOn(item)}
             ><FaEye className='group-hover:text-blue-500' /> </div>
-            <div className='p-2 w-16 flex items-center justify-center' ><BiSolidArchiveIn /></div>
+            {/* SHOW ARCHIVE BUTTON TO ADMINS AND INITIATOR ONLY */}
+            {(userRole === "admin" || userRole === "superAdmin" || userRole === "initiator") &&
+              <div className='p-2 w-16 flex items-center justify-center' ><BiSolidArchiveIn /></div>
+            }
           </div>
         ))
       )
@@ -204,6 +224,8 @@ function Submissions() {
         </div>)
       }
 
+      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+
       {/* MODAL BACKDROP */}
       {isModalOpen && (
         <div
@@ -211,6 +233,7 @@ function Submissions() {
           onClick={toggleModalOff}
         ></div>
       )}
+      
 
       {/* MODAL */}
       {selectedSubmission &&
@@ -333,6 +356,7 @@ function Submissions() {
         </button>
       </div>
     </div>
+  </div>
   )
 }
 
