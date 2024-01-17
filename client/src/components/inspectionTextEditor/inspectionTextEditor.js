@@ -56,22 +56,23 @@ const InspectionTextEditor = () => {
     //SUBMIT COMMENT
     const [newComment, setNewComment] = useState({});
     const { id } = useParams();
-const submitComment = async () => {
-    // Fetch status from the server
-    try {
-        const response = await axios.put(`${baseUrl}/add-comment/${id}`,
-            { commentText: newComment,
-                InspectorId: userDbId,
-             });
-        if (response.status === 200) {
-            // window.location.reload()
-        } else {
-            console.log("Error")
+    const submitComment = async () => {
+        // Fetch status from the server
+        try {
+            const response = await axios.put(`${baseUrl}/add-comment/${id}`,
+                {
+                    commentText: newComment,
+                    InspectorId: userDbId,
+                });
+            if (response.status === 200) {
+                // window.location.reload()
+            } else {
+                console.log("Error")
+            }
+        } catch (error) {
+            console.error('Error fetching status:', error);
         }
-    } catch (error) {
-        console.error('Error fetching status:', error);
-    }
-};
+    };
 
     const handleKeyCommand = (command) => {
         const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -167,16 +168,18 @@ const submitComment = async () => {
                     </div>
                 </div>
             </div>
-            <div className="flex items-center justify-center p-4 md:p-5 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b">
-                {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
-                <button
-                  onClick={submitComment}
-                  data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                >Submit</button>
-                <button
-                  data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
-                >Cancel</button>
-              </div>
+            {/* ///BUTTONS /// */}
+            {
+                <div className="flex items-center justify-center p-4 md:p-5 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b">
+                    {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
+                    <button
+                        onClick={submitComment}
+                        data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                    >Submit</button>
+                    <button
+                        data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
+                    >Cancel</button>
+                </div>}
         </>
     )
 }

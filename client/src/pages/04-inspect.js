@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom';
 import { FaFilePdf, FaExternalLinkSquareAlt } from "react-icons/fa";
+import axios from 'axios';
 
 import {
   Editor,
   EditorState,
-  RichUtils,
-  convertToRaw,
   convertFromRaw,
 } from "draft-js";
 import InspectionTextEditor from '../components/inspectionTextEditor/inspectionTextEditor'
@@ -14,6 +14,8 @@ const baseUrl = process.env.REACT_APP_BASE_URL
 
 
 const Inspect = () => {
+  // SHOW HIDE COMMENT BOX
+  const [showCommentBox, setShowCommentBox] = useState(false)
   ///////// GET SUBMISSIONS LIST /////////
   const { id } = useParams();
   const [data, setData] = useState({})
@@ -33,6 +35,27 @@ const Inspect = () => {
   useEffect(() => {
     getData()
   }, [])
+
+  // APPROVE OR REJECT
+  const { userDbId } = useSelector(state => state.user)
+
+  const updateApprovalState = async (approvalState) => {
+    try {
+      const response = await axios.put(`${baseUrl}/update-document-status/${id}`,
+        {
+          state: approvalState,
+          operator: userDbId,
+        });
+      if (response.status === 200) {
+        // window.location.reload()
+      } else {
+        console.log("Error")
+      }
+    } catch (error) {
+      console.error('Error fetching status:', error);
+    }
+  };
+
   //convert INSTRUCTION JSON to Draft.js content
   const contentState = data?.instruction
     ? convertFromRaw(JSON.parse(data.instruction))
@@ -126,59 +149,99 @@ const Inspect = () => {
             Inspection comments:
           </a>
           {data.comments &&
-          data.comments.length > 0 ?
+            data.comments.length > 0 ?
             (
               data.comments.map((item, index) => (
-              <div>
-                <div className='flex flex-col py-2 text-xs'>
-                  <div className='flex flex-row gap-5' >
-                    <span>
-                      <a className='font-bold' >Inspected by: </a>
-                      <a>{item?.InspectorId.fullName}</a>
-                    </span>
-                    {item?.InspectorId.department &&
+                <div className=''>
+                  <div className='flex flex-col py-2 text-xs mb-2'>
+                    <div className='flex flex-row gap-5' >
                       <span>
-                      <a className='font-bold' >Department: </a>
+                        <a className='font-bold' >Inspected by: </a>
+                        <a>{item?.InspectorId.fullName}</a>
+                      </span>
+                      {item?.InspectorId.department &&
+                        <span>
+                          <a className='font-bold' >Department: </a>
 
-                      <a>{item?.InspectorId.department || item?.InspectorId.userRole}</a>
-                      
-                    </span>}
-                    <span>
-                      <a className='font-bold' >Inspected on: </a>
-                      <a>{new Date(item?.createdAt).toLocaleString()}</a>
-                    </span>
+                          <a>{item?.InspectorId.department || item?.InspectorId.userRole}</a>
 
+                        </span>}
+                      <span>
+                        <a className='font-bold' >Inspected on: </a>
+                        <a>{new Date(item?.createdAt).toLocaleString()}</a>
+                      </span>
+
+                    </div>
                   </div>
-                </div>
-                {/* COMMENT */}
-                {/* <div className='w-full bg-white px-5 py-3 mb-5 rounded-md' >
+                  {/* COMMENT */}
+                  {/* <div className='w-full bg-white px-5 py-3 mb-5 rounded-md' >
                   <Editor editorState={getFormatteComment(item.commentText)} readOnly={true} />
                 </div> */}
-                <div className='flex flex-row gap-2'>
-            <a className="leading-relaxed text-black font-bold text-sm min-w-40">
-              Comment:
-            </a>
-            <div className='w-full bg-white px-5 py-3 mb-5 rounded-md'>
-            <Editor editorState={getFormatteComment(item.commentText)} readOnly={true} />
-          </div>
-          </div>
-              </div>
-            ))
+                  <div className='flex flex-col'>
+                    <a className="leading-relaxed text-black font-bold text-sm min-w-32">
+                      Comment:
+                    </a>
+                    <div className='w-full bg-white px-5 py-3 mb-5 rounded-md'>
+                      <Editor editorState={getFormatteComment(item.commentText)} readOnly={true} />
+                    </div>
+                  </div>
+                </div>
+              ))
             )
             :
             (<div className='p-5'>
-          No inspection comments yet.
-        </div>)
+              No inspection comments yet.
+            </div>)
           }
+           {/* APPROVE REJECT BUTTONS */}
+        {data.comments &&
+            data.comments.length > 0 &&
+            <div className="flex flex-row items-center justify-center w-full border-b py-3 border-gray-500">
+              {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
+              <button
+                onClick={() => updateApprovalState("approved")}
+                data-modal-hide="extralarge-modal"
+                type="button"
+                className="w-full text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm py-2.5 text-center shadow-md"
+              >Approve</button>
+              <button
+                onClick={() => updateApprovalState("rejected")}
+                data-modal-hide="extralarge-modal"
+                type="button"
+                className="w-full text-white bg-orange-400 hover:bg-orange-500  rounded-lg text-sm font-medium  py-2.5 focus:z-10 shadow-md"
+              >Reject</button>
+            </div>}
         </div>
 
+        {/* ///BUTTONS /// */}
+        <div className='flex flex-row items-center justify-center gap-2'>
+         
+          <div className='flex items-center justify-center'>
+            <button
+              // onClick={() => updateApprovalState("approved")}
+              data-modal-hide="extralarge-modal"
+              type="button"
+              className="min-w-40 w-96 text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center shadow-md"
+            >Comment</button>
+          </div>
+          
+          <div className='flex items-center justify-center'>
+            <button
+              data-modal-hide="extralarge-modal"
+              type="button"
+              className="min-w-40 w-96 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10 shadow-md"
+            >Cancel</button>
+          </div>
+        </div>
+        
       </div>
-      {/* COMMENTS */}
 
-      <div className='flex flex-col gap-5 w-full bg-gray-200 px-10 py-5 rounded-md' >
-      <InspectionTextEditor />
 
-    </div>
+      {/* ADD COMMENTS */}
+      {showCommentBox &&
+        <div className='flex flex-col gap-5 w-full bg-gray-200 px-10 py-5 rounded-md' >
+          <InspectionTextEditor />
+        </div>}
     </div>
   )
 }
