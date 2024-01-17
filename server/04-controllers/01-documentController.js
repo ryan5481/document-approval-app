@@ -25,7 +25,11 @@ const InitiateDocument = async (req, res) => {
             ...req.body,
             pdfFile: req.file.filename,
             firstAssigneeName: firstAssignee.fullName,
-            firstAssigneeDept: firstAssignee?.department
+            firstAssigneeDept: firstAssignee?.department,
+            status: {
+                state: "initiated",
+                operator: req.body.initiatorId
+            }
         };
 
         const data = await StatusModel.create(reqInclFile);
@@ -93,10 +97,48 @@ const AddComment = async (req, res) => {
         if (!commentText) {
             return res.status(400).json({ msg: "No valid comment text provided." });
         }
-
+        //ADD A NEW COMMENT OBJECT INTO COMMENTS ARRAY
         const updated = await StatusModel.findByIdAndUpdate(
             id,
-            { $push: { comments: { commentText, InspectorId } } },
+            {
+                $push: {
+                    comments: { commentText, InspectorId },
+                    status: { state: "inspected", operator: InspectorId }
+                }
+            },
+            { new: true }
+        );
+
+        if (updated) {
+            return res.status(200).json({
+                msg: "Comment added successfully.",
+                updated 
+            });
+        } else {
+            return res.status(404).json({
+                msg: "Data not found." 
+            });
+        }
+    } catch (err) {
+        console.error("Error: " + err);
+        return res.status(500).json({
+            msg: "Internal server error." 
+        });
+    }
+};
+
+const UpdateStatus = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { state, operator } = req.body;
+
+        if (!state) {
+            return res.status(400).json({ msg: "No valid comment data provided." });
+        }
+        //ADD A NEW COMMENT OBJECT INTO COMMENTS ARRAY
+        const updated = await StatusModel.findByIdAndUpdate(
+            id,
+            { $push: { status: { state, operator } } },
             { new: true } 
         );
 
@@ -118,7 +160,9 @@ const AddComment = async (req, res) => {
     }
 };
 
+
 exports.InitiateDocument = InitiateDocument
 exports.GetSubmissions = GetSubmissions
 exports.GetASubmissionById = GetASubmissionById
 exports.AddComment = AddComment
+exports.UpdateStatus = UpdateStatus

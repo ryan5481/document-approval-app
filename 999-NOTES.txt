@@ -1,0 +1,3 @@
+
+
+reject document and direct to initiator? or to a specific user?

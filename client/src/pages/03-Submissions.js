@@ -23,7 +23,7 @@ function Submissions() {
       });
       if (res.status === 200) {
         const data = await res.json()
-        setSubmissionsList(data.foundData.reverse())
+        setSubmissionsList(data.foundData)
       }
     } catch {
       console.log("Error")
@@ -199,7 +199,7 @@ function Submissions() {
         paginatedList.map((item, index) => (
           <div
             key={index}
-            className={`w-[1200px] flex flex-cols-5 items-center bg-white border-b-[1px] border-l-[1px] border-r-[1px] text-sm text-gray-900 cursor-pointer
+            className={`w-[1200px] flex flex-cols-5 items-center bg-white border-b-[1px] border-l-[1px] border-r-[1px] text-sm text-gray-900 cursor-pointer hover:text-blue-500 
               ${index === paginatedList.length - 1 ? 'rounded-b-lg' : ''}`}
           >
             <a className='flex items-center justify-center p-2 w-10 border-r-[1px]' >{index + 1}</a>
@@ -210,7 +210,7 @@ function Submissions() {
             <div
               className={`p-2 w-16 flex items-center justify-center group ${(userRole === "admin" || userRole === "superAdmin" || userRole === "initiator") ? ("border-r-[1px]") : (null)}`}
               onClick={() => toggleModalOn(item)}
-            ><FaEye className='group-hover:text-blue-500' /> </div>
+            ><FaEye className='group-hover:text-green-500' /> </div>
             {/* SHOW ARCHIVE BUTTON TO ADMINS AND INITIATOR ONLY */}
             {(userRole === "admin" || userRole === "superAdmin" || userRole === "initiator") &&
               <div className='p-2 w-16 flex items-center justify-center' ><BiSolidArchiveIn /></div>
@@ -224,7 +224,7 @@ function Submissions() {
         </div>)
       }
 
-      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+      {/* /////////////////////////////////////////////////////// MODAL MODAL MODAL ////////////////////////////////////////////////////////////// */}
 
       {/* MODAL BACKDROP */}
       {isModalOpen && (
