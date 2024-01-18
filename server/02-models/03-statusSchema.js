@@ -36,6 +36,11 @@ const statusSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
+
+      rejectedToAsignee: {
+        type: String,
+      },
+
       createdAt: {
         type: Date,
         default: Date.now

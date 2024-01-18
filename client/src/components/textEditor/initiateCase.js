@@ -145,8 +145,8 @@ const InitiateCase = () => {
       if (selectedPdfFile) {
         formData.append('pdfFile', selectedPdfFile, selectedPdfFile.name);
       }
-      formData.append('fileTitle', fileTitle);
-      formData.append('title', title);
+      formData.append('fileTitle', fileTitle.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
+      formData.append('title', title.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
       formData.append('instruction', contentStateJSON);
       formData.append('initiatorId', userDbId);
       formData.append('firstAssigneeId', firstAssigneeId);

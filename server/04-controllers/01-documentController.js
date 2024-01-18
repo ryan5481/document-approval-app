@@ -130,7 +130,7 @@ const AddComment = async (req, res) => {
 const UpdateStatus = async (req, res) => {
     try {
         const id = req.params.id;
-        const { state, operator } = req.body;
+        const { state, operator, rejectedToAsignee } = req.body;
 
         if (!state) {
             return res.status(400).json({ msg: "No valid comment data provided." });
@@ -138,7 +138,7 @@ const UpdateStatus = async (req, res) => {
         //ADD A NEW COMMENT OBJECT INTO COMMENTS ARRAY
         const updated = await StatusModel.findByIdAndUpdate(
             id,
-            { $push: { status: { state, operator } } },
+            { $push: { status: { state, operator, rejectedToAsignee } } },
             { new: true } 
         );
 
