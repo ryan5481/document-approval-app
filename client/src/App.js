@@ -16,7 +16,7 @@ import Navbar from "./components/nav/navbar.js";
 function App() {
 
   return (
-    <div>
+    <div className="min-h-screen bg-blue-300">
       <Routes>
         <Route path="/*" element={<Layout />} />
       </Routes>
