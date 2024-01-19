@@ -58,7 +58,7 @@ export default function SignupUserForm() {
   };
 
   return (
-    <main className="flex py-16 justify-center items-center  w-full bg-blue-300">
+    <main className="flex py-16 justify-center items-center">
       {/* LOGO */}
       <div className='flex flex-col w-80 items-center justify-center bg-white p-5 rounded-lg shadow-lg'>
         <div className='relative flex items-center justify-center mb-2 h-14 w-80'>

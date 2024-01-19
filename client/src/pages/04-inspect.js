@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom';
 import { FaFilePdf, FaExternalLinkSquareAlt } from "react-icons/fa";
-import { PiSealCheckFill, PiArrowUUpLeftBold } from "react-icons/pi";
+import { PiSealCheckFill, PiSealCheck, PiArrowUUpLeftBold } from "react-icons/pi";
 import axios from 'axios';
 
 import {
@@ -279,8 +279,8 @@ const Inspect = () => {
           }
 
           {/* APPROVE REJECT BUTTONS */}
-          {data.comments &&
-            data.comments.length > 0 &&
+          {/* APPROVE REJECT BUTTONS AVAILABLE IF IT'S INSPECTED ONLY */}
+          {data.comments && data.comments.length > 0 && data.status[data.status.length - 1].state == "inspected" &&
             <div className="flex flex-row items-center justify-center w-full border-t py-3 border-gray-500">
               {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
               <button
