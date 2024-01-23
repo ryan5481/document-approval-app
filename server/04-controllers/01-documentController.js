@@ -51,42 +51,75 @@ const InitiateDocument = async (req, res) => {
 
 
 const GetSubmissions = async (req, res) => {
-  try {
-     
-      const foundData = await StatusModel.find()
+    try {
+        const foundData = await StatusModel.find().populate('status.operator', 'userName');
 
-      if (foundData) {
-          res.status(200).json({
-            foundData
-          });
-      } else {
-          res.status(401).json({ msg: "Error" });
-      }
-  } catch (error) {
-      console.error("Error", error);
-      return res.status(500).json({ msg: "Internal server error." });
-  }
-}
+        if (foundData) {
+            const populatedDataWithInitiatorName = await Promise.all(foundData.map(async item => {
+                const user = await User.findById(item.initiatorId);
+                if (user) {
+                    const populatedStatus = await Promise.all(item.status.map(async statusItem => {
+                        const operatorUser = await User.findById(statusItem.operator);
+                        const rejectedToUser = await User.findById(statusItem?.rejectedToAsignee);
+                        if (operatorUser) {
+                            return {
+                                ...statusItem.toObject(),
+                                operatorName: operatorUser.fullName,
+                                operatorUserDept: operatorUser?.department,
+                                operatorUserRole: operatorUser?.userRole,
+                                // revertedTo: rejectedToUser?.fullName
+
+                            };
+                        } else {
+                            console.error(`User with _id ${statusItem.operator} not found`);
+                            return statusItem.toObject();
+                        }
+                    }));
+
+                    return {
+                        ...item.toObject(),
+                        initiatorName: user.fullName,
+                        initiatorUserRole: user.userRole,
+                        status: populatedStatus
+                    };
+                } else {
+                    console.error(`User with _id ${item.initiatorId} not found`);
+                    return item.toObject();
+                }
+            }));
+
+            res.status(200).json({
+                foundData: populatedDataWithInitiatorName
+            });
+        } else {
+            res.status(401).json({ msg: "Error" });
+        }
+    } catch (error) {
+        console.error("Error", error);
+        return res.status(500).json({ msg: "Internal server error." });
+    }
+};
+
 
 const GetASubmissionById = async (req, res) => {
-  try {
-      const data = await StatusModel.findById(req.params.id)
-      .populate({
-        path: "comments.InspectorId",
-        model: "User",
-        select: "fullName department userRole",
-      })
-      if (data) {
-          res.status(200).json({
-            data
-          });
-      } else {
-          res.status(401).json({ msg: "Error" });
-      }
-  } catch (error) {
-      console.error("Error", error);
-      return res.status(500).json({ msg: "Internal server error." });
-  }
+    try {
+        const data = await StatusModel.findById(req.params.id)
+            .populate({
+                path: "comments.InspectorId",
+                model: "User",
+                select: "fullName department userRole",
+            })
+        if (data) {
+            res.status(200).json({
+                data
+            });
+        } else {
+            res.status(401).json({ msg: "Error" });
+        }
+    } catch (error) {
+        console.error("Error", error);
+        return res.status(500).json({ msg: "Internal server error." });
+    }
 }
 
 const AddComment = async (req, res) => {
@@ -112,17 +145,17 @@ const AddComment = async (req, res) => {
         if (updated) {
             return res.status(200).json({
                 msg: "Comment added successfully.",
-                updated 
+                updated
             });
         } else {
             return res.status(404).json({
-                msg: "Data not found." 
+                msg: "Data not found."
             });
         }
     } catch (err) {
         console.error("Error: " + err);
         return res.status(500).json({
-            msg: "Internal server error." 
+            msg: "Internal server error."
         });
     }
 };
@@ -139,23 +172,23 @@ const UpdateStatus = async (req, res) => {
         const updated = await StatusModel.findByIdAndUpdate(
             id,
             { $push: { status: { state, operator, rejectedToAsignee } } },
-            { new: true } 
+            { new: true }
         );
 
         if (updated) {
             return res.status(200).json({
                 msg: "Comment added successfully.",
-                updated 
+                updated
             });
         } else {
             return res.status(404).json({
-                msg: "Data not found." 
+                msg: "Data not found."
             });
         }
     } catch (err) {
         console.error("Error: " + err);
         return res.status(500).json({
-            msg: "Internal server error." 
+            msg: "Internal server error."
         });
     }
 };

@@ -1,15 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom';
-import { FaFilePdf, FaExternalLinkSquareAlt } from "react-icons/fa";
-import { PiSealCheckFill, PiSealCheck, PiArrowUUpLeftBold } from "react-icons/pi";
+import { FaFilePdf, FaExternalLinkSquareAlt, FaUserCircle, FaNetworkWired } from "react-icons/fa";
+import { BsFillCalendarDayFill } from "react-icons/bs";
+import { PiSealCheckFill, PiArrowUUpLeftBold, PiUserSquareFill } from "react-icons/pi";
+import { AiFillAppstore } from "react-icons/ai";
 import axios from 'axios';
 
-import {
-  Editor,
-  EditorState,
-  convertFromRaw,
-} from "draft-js";
+import { Editor, EditorState, convertFromRaw } from "draft-js";
 import InspectionTextEditor from '../components/inspectionTextEditor/inspectionTextEditor'
 const baseUrl = process.env.REACT_APP_BASE_URL
 
@@ -229,9 +227,6 @@ const Inspect = () => {
       <div className='flex flex-col gap-5 w-full bg-gray-200 px-10 py-5 rounded-md' >
         {/* INSTRUCTION VIEWER */}
         <div className='flex flex-col gap-2'>
-          <a className="leading-relaxed text-black font-bold border-b border-gray-500 py-2 min-w-40">
-            Inspection comments:
-          </a>
           {data.comments &&
             data.comments.length > 0 ?
             (
@@ -239,32 +234,16 @@ const Inspect = () => {
                 <div className=''>
                   <div className='flex flex-col py-2 text-xs mb-2'>
                     <div className='flex flex-row gap-5' >
-                      <span>
-                        <a className='font-bold' >Inspected by: </a>
-                        <a>{item?.InspectorId.fullName}</a>
-                      </span>
+                      <span className='flex items-center justify-center gap-2 text-[18px]'> <PiUserSquareFill size={24} /> <a>{item?.InspectorId.fullName}</a></span>
                       {item?.InspectorId.department &&
-                        <span>
-                          <a className='font-bold' >Department: </a>
-
-                          <a>{item?.InspectorId.department || item?.InspectorId.userRole}</a>
-
+                        <span className='flex items-center justify-center gap-2 text-[18px]'> <AiFillAppstore size={22} /> <a>{item?.InspectorId.department || item?.InspectorId.userRole}</a>
                         </span>}
-                      <span>
-                        <a className='font-bold' >Inspected on: </a>
-                        <a>{new Date(item?.createdAt).toLocaleString()}</a>
+                        <span className='flex items-center justify-center gap-2 text-[18px]'> <BsFillCalendarDayFill /> <a>{new Date(item?.createdAt).toLocaleString()}</a>
                       </span>
-
                     </div>
                   </div>
-                  {/* COMMENT */}
-                  {/* <div className='w-full bg-white px-5 py-3 mb-5 rounded-md' >
-                  <Editor editorState={getFormatteComment(item.commentText)} readOnly={true} />
-                </div> */}
+                 
                   <div className='flex flex-col'>
-                    <a className="leading-relaxed text-black font-bold text-sm min-w-32">
-                      Comment:
-                    </a>
                     <div className='w-full bg-white px-5 py-3 mb-5 rounded-md'>
                       <Editor editorState={getFormatteComment(item.commentText)} readOnly={true} />
                     </div>
@@ -379,76 +358,76 @@ const Inspect = () => {
         <div className="relative p-4 w-full max-w-md max-h-full">
           <div className="relative bg-white rounded-lg shadow dark:bg-gray-100">
             <form>
-            <button
-              onClick={toggleRejectionModalOff}
-              type="button"
-              className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="popup-modal"
-            >
-              <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-              </svg>
-              <span className="sr-only">Close modal</span>
-            </button>
-            <div className="p-4 md:p-5 text-center">
-              <div className="flex items-center justify-center">
-                <div className="flex items-center justify-center bg-red-500 w-[60px] h-[60px] rounded-full">
-                  <PiArrowUUpLeftBold className='text-white' size={40} />
-                </div>
-              </div>
-              <div className='flex flex-col gap-2 p-2 px-5'>
-                <h3 className="text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to reject this document?</h3>
-                <div className='flex flex-row gap-2 items-center justify-start' >
-                  <a>Title: </a>
-                  <a className='font-bold' >{dataSelectedForRejection.title}</a>
-                </div>
-                {/* SELECT USER TO REVERT BACK TO */}
-                <div className='w-full flex justify-start text-sm' ><label>Revert the task to: </label></div>
-                <div className="flex flex-row gap-2 justify-stretch">
-                  {/* SELECT DEPARTMENT */}
-                  <div className="flex flex-col w-full rounded-xs justify-start">
-                    <select
-                      required={true}
-                      onChange={(e) => setSelectedDept(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    >
-                      {uniqueDepartmentsArray.reverse().map((item, index) => (
-                        <option value={item.department}>
-                          {item.department}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex flex-col w-full rounded-xs justify-start">
-                    {/* SELECT USER */}
-                    <select
-                      required={true}
-                      onChange={(e) => setRejectedToAsignee(e.target.value) || filteredUsers[0]?._id}
-                      className={`bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder:${filteredUsers[0]?.fullName}`}
-                    >
-                      {filteredUsers.map((item, index) => (
-                        <option value={item._id}>
-                          {item.fullName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={() => updateApprovalState("rejected")}
-                data-modal-hide="popup-modal"
-                type="submit"
-                className="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">
-                Reject
-              </button>
               <button
                 onClick={toggleRejectionModalOff}
-                data-modal-hide="popup-modal"
                 type="button"
-                className="text-white bg-red-500  hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5focus:z-10"
-              >Cancel
+                className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="popup-modal"
+              >
+                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                </svg>
+                <span className="sr-only">Close modal</span>
               </button>
-            </div>
+              <div className="p-4 md:p-5 text-center">
+                <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center bg-red-500 w-[60px] h-[60px] rounded-full">
+                    <PiArrowUUpLeftBold className='text-white' size={40} />
+                  </div>
+                </div>
+                <div className='flex flex-col gap-2 p-2 px-5'>
+                  <h3 className="text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to reject this document?</h3>
+                  <div className='flex flex-row gap-2 items-center justify-start' >
+                    <a>Title: </a>
+                    <a className='font-bold' >{dataSelectedForRejection.title}</a>
+                  </div>
+                  {/* SELECT USER TO REVERT BACK TO */}
+                  <div className='w-full flex justify-start text-sm' ><label>Revert the task to: </label></div>
+                  <div className="flex flex-row gap-2 justify-stretch">
+                    {/* SELECT DEPARTMENT */}
+                    <div className="flex flex-col w-full rounded-xs justify-start">
+                      <select
+                        required={true}
+                        onChange={(e) => setSelectedDept(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      >
+                        {uniqueDepartmentsArray.reverse().map((item, index) => (
+                          <option value={item.department}>
+                            {item.department}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex flex-col w-full rounded-xs justify-start">
+                      {/* SELECT USER */}
+                      <select
+                        required={true}
+                        onChange={(e) => setRejectedToAsignee(e.target.value) || filteredUsers[0]?._id}
+                        className={`bg-gray-50 border border-gray-300 text-gray-900 mb-3 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder:${filteredUsers[0]?.fullName}`}
+                      >
+                        {filteredUsers.map((item, index) => (
+                          <option value={item._id}>
+                            {item.fullName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => updateApprovalState("rejected")}
+                  data-modal-hide="popup-modal"
+                  type="submit"
+                  className="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">
+                  Reject
+                </button>
+                <button
+                  onClick={toggleRejectionModalOff}
+                  data-modal-hide="popup-modal"
+                  type="button"
+                  className="text-white bg-red-500  hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5focus:z-10"
+                >Cancel
+                </button>
+              </div>
             </form>
           </div>
         </div>

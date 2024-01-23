@@ -6,7 +6,13 @@ import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
 import { useSelector } from 'react-redux'
 //MODAL CONTENTS
 import { Editor, EditorState, convertFromRaw } from 'draft-js';
-import { FaFilePdf } from "react-icons/fa";
+import { FaFilePdf, FaUserCircle } from "react-icons/fa";
+import { MdRocketLaunch } from "react-icons/md";
+import { BsFillCalendarDayFill } from "react-icons/bs";
+import { BsPatchCheckFill } from "react-icons/bs";
+import { GrRevert } from "react-icons/gr";
+import { PiClipboardTextFill } from "react-icons/pi";
+import { AiFillAppstore } from "react-icons/ai";
 
 const baseUrl = process.env.REACT_APP_BASE_URL
 const itemsPerPage = 10;
@@ -51,7 +57,7 @@ function Submissions() {
     ? filteredSubmissionsListByUserRole
     : filteredSubmissionsListByUserRole.filter(item => {
       // Check if the item has a "status" array and it's not empty
-      if (item.status && item.status.length > 0) {
+      if (item.status && item.status.length >= 0) {
         // Get the last object in the "status" array
         const lastStatus = item.status[item.status.length - 1];
 
@@ -134,7 +140,7 @@ function Submissions() {
     : EditorState.createEmpty();
 
   //convert COMMENTS JSON to Draft.js content
-  const getFormatteComment = (unformattedJSON) => {
+  const getFormattedComment = (unformattedJSON) => {
     const commentState = unformattedJSON
       ? convertFromRaw(JSON.parse(unformattedJSON))
       : null;
@@ -176,6 +182,7 @@ function Submissions() {
       setCurrentPage((prev) => prev + 1);
     }
   };
+
   return (
     <div className=' flex flex-col items-center justify-start bg-slate-700 border-b border-gray-200 min-h-screen'>
       {/* ////// FILTER DATA BY STATUS  ////// */}
@@ -185,6 +192,12 @@ function Submissions() {
             onClick={() => handleItemClick("all")}
             className={`inline-block w-full p-4 text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200 rounded-s-lg ${getBackgroundColor("all")}`}
           >All</a>
+        </li>
+        <li className="w-full">
+          <a
+            onClick={() => handleItemClick("all")}
+            className={`inline-block w-full p-4 text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200  ${getBackgroundColor("initiated")}`}
+          >Initiated</a>
         </li>
         <li className="w-full">
           <a
@@ -266,6 +279,7 @@ function Submissions() {
                 <a className='p-2 w-16'
                 >Archive</a>}
             </div>}
+
           {/* DATA LIST */}
           {paginatedList &&
             paginatedList.length > 0 ? (
@@ -318,9 +332,9 @@ function Submissions() {
             >
               <div className="relative w-full max-w-7xl max-h-full">
                 {/* MODAL CONTENT --> */}
-                <div className="relative bg-white rounded-lg shadow px-5">
+                <div className="relative flex flex-col gap-0 bg-white rounded-lg shadow p-5">
                   {/* MODAL HEADER */}
-                  <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                  <div className="flex items-center justify-between p-4 border-b rounded-t">
                     <div className='w-full flex items-center justify-center' >
                       <h3 className="flex items-center justify-center text-xl font-medium text-gray-900 ">
                         View case
@@ -337,123 +351,143 @@ function Submissions() {
                       <span className="sr-only">Close modal</span>
                     </button>
                   </div>
+
                   {/* MODAL BODY */}
+                  {/* STEPPER   STEPPER  STEPPER   STEPPER  STEPPER   STEPPER  STEPPER   STEPPER  STEPPER   STEPPER  STEPPER   STEPPER  */}
 
-                  <div className="p-4 md:p-5 space-y-4">
-                    {/* TITLE */}
-                    <div className='flex flex-row items-center  gap-2'>
-                      <a className="leading-relaxed text-black font-bold min-w-40">
-                        Case title:
-                      </a>
-                      <a className="leading-relaxed text-black font-bold">
-                        {selectedSubmission.title}
-                      </a>
-                    </div>
-
-                    <div className='flex flex-row gap-2'>
-                      {/* PDF FILE */}
-                      <a className="leading-relaxed text-black font-bold min-w-40">
-                        Files uploaded:
-                      </a>
-                      <div className='fl' >
-                        <div
-                          onClick={() => window.open(`/uploads/documentPdfs/${selectedSubmission.pdfFile}`, '_blank')}
-                          className='flex flex-col items-center justify-center p-1 py-2 bg-white hover:bg-gray-200 rounded-md cursor-pointer group'
-                        >
-                          <FaFilePdf
-                            size={60}
-                            className='text-red-500 group-hover:text-red-600'
-                          />
-                          <a className='text-xs p-1 text-gray-700 group-hover:text-black' >
-                            {selectedSubmission.fileTitle}
+                  <ol className="relative text-gray-500 border-s-2 border-blue-500 mt-5 mx-10">
+                    <li className="mb-10 ms-6">
+                      <span className="absolute flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full -start-4 ring-4 ring-white ">
+                        <MdRocketLaunch color='white' />
+                      </span>
+                      <div className='flex flex-col gap-3 rounded-md px-5 py-2 pb-5 bg-gray-100 '>
+                        {/* TITLE */}
+                        <div className='flex flex-row items-center justify-between' >
+                          <a className="leading-relaxed text-black font-bold">
+                            {selectedSubmission.title}
                           </a>
+                          {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "initiated" &&
+                            <span>Status: <a className='text-blue-500' >Initiated</a></span>}
+                          {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "inspected" &&
+                            <span>Status: <a className='text-blue-500' >Inspected</a></span>}
+                          {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "approved" &&
+                            <span>Status: <a className='text-green-500' >Approved</a></span>}
+                          {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "rejected" &&
+                            <span>Status: <a className='text-red-500' >Rejected</a></span>}
+                        </div>
+
+                        <div className='flex flex-row gap-2'>
+                          {/* PDF FILE */}
+
+                          <div
+                            onClick={() => window.open(`/uploads/documentPdfs/${selectedSubmission.pdfFile}`, '_blank')}
+                            className='flex flex-col items-center justify-center p-1 py-2 bg-white hover:bg-gray-200 rounded-md cursor-pointer group'
+                          >
+                            <FaFilePdf
+                              size={60}
+                              className='text-red-500 group-hover:text-red-600'
+                            />
+                            <a className='text-xs p-1 text-gray-700 group-hover:text-black' >
+                              {selectedSubmission.fileTitle}
+                            </a>
+                          </div>
+                        </div>
+                        <div className='flex flex-row gap-2 bg-white p-5 rounded-md'>
+                          <Editor editorState={editorState} readOnly={true} />
+                        </div>
+                        {/* INITIATION DETAILS */}
+                        <div className='flex flex-col'>
+                          <div className='flex flex-row gap-5' >
+                            <a>Initiated by: {selectedSubmission.initiatorName}</a>
+                            <a>Initiated on: {new Date(selectedSubmission.createdAt).toLocaleString()}</a>
+                            <a>First assigned to: {selectedSubmission.firstAssigneeDept}, {selectedSubmission.firstAssigneeName}</a>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className='flex flex-row gap-2'>
-                      <a className="leading-relaxed text-black font-bold min-w-40">
-                        Instruction:
-                      </a>
-                      <Editor editorState={editorState} readOnly={true} />
-                    </div>
-                  </div>
-                  {/* INITIATION DETAILS */}
-                  <div className='flex flex-col border-t border-gray-200 p-5'>
-                    <div className='flex flex-row gap-5' >
-                      <a>Initiated by: {selectedSubmission.initiatorName}</a>
-                      <a>Initiated on: {new Date(selectedSubmission.createdAt).toLocaleString()}</a>
-                      <a>First assigned to: {selectedSubmission.firstAssigneeName}</a>
-                    </div>
-                  </div>
 
-                  {/* //////// COMMENTS ////////// */}
-                  <div className='flex flex-col gap-5 w-full bg-gray-200 px-10 py-5 rounded-md' >
-                    {/* INSTRUCTION VIEWER */}
-                    <div className='flex flex-col gap-2'>
-                      <a className="leading-relaxed text-black font-bold border-b border-gray-500 py-2 min-w-40">
-                        Inspection comments:
-                      </a>
-                      {selectedSubmission.comments &&
-                        selectedSubmission.comments.length > 0 ?
-                        (
-                          selectedSubmission.comments.map((item, index) => (
-                            <div className=''>
+                    </li>
+
+                    {/* //////// COMMENTS ////////// */}
+
+                    {selectedSubmission.comments &&
+                      selectedSubmission.comments.length >= 0 ?
+                      (
+                        selectedSubmission.comments.map((item, index) => (
+                          <li className="mb-10 ms-6">
+                            <span className="absolute flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full -start-4 ring-4 ring-white ">
+                              <PiClipboardTextFill color='white' />
+                            </span>
+                            <div className='bg-gray-100 px-5 rounded-md'>
                               <div className='flex flex-col py-2 text-xs mb-2'>
                                 <div className='flex flex-row gap-5' >
-                                  <span>
-                                    <a className='font-bold' >Inspected by: </a>
-                                    <a>{item?.InspectorId.fullName}</a>
-                                  </span>
+                                  <span className='flex items-center justify-center gap-2 text-[14px]'> <FaUserCircle  /> <a>{item?.InspectorId.fullName}</a></span>
                                   {item?.InspectorId.department &&
-                                    <span>
-                                      <a className='font-bold' >Department: </a>
-
-                                      <a>{item?.InspectorId.department || item?.InspectorId.userRole}</a>
-
+                                    <span className='flex items-center justify-center gap-2 text-[14px]'> <AiFillAppstore  /> <a>{item?.InspectorId.department || item?.InspectorId.userRole}</a>
                                     </span>}
-                                  <span>
-                                    <a className='font-bold' >Inspected on: </a>
-                                    <a>{new Date(item?.createdAt).toLocaleString()}</a>
+                                  {/* <a>{new Date(item?.createdAt).toLocaleString()}</a> */}
+                                  <span className='flex items-center justify-center gap-2 text-[18px]'> <BsFillCalendarDayFill /> <a>{new Date(item?.createdAt).toLocaleString()}</a>
                                   </span>
 
                                 </div>
                               </div>
                               {/* COMMENT */}
                               <div className='flex flex-col'>
-                                <a className="leading-relaxed text-black font-bold text-sm min-w-32">
-                                  Comment:
-                                </a>
                                 <div className='w-full bg-white px-5 py-3 mb-5 rounded-md'>
-                                  <Editor editorState={getFormatteComment(item.commentText)} readOnly={true} />
+                                  <Editor editorState={getFormattedComment(item.commentText)} readOnly={true} />
                                 </div>
                               </div>
                             </div>
-                          ))
-                        )
-                        :
-                        (<div className='p-5'>
-                          No inspection comments yet.
-                        </div>)
-                      }
 
+                          </li>
 
-                    </div>
+                        ))
+                      )
+                      :
+                      (<div className='p-5 mb-5 ml-5 bg-gray-100 rounded-md'>
+                        No inspection comments yet.
+                      </div>)
+                    }
+                  </ol>
 
-                  </div>
+                  {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "approved" &&
+                    <ol className="relative text-gray-500 mb-5 mx-10">
+                      <li className="mb-10 ms-6">
+                        <BsPatchCheckFill size={30} className="absolute flex items-center justify-center text-green-500 bg-white  w-8 h-8rounded-full -start-4 ring-4 ring-white " />
+                        <h3 className="text-xl text-green-500 font-bold leading-tight">Aproved</h3>
+                        <p className="text-sm">Approved by: {selectedSubmission.status[selectedSubmission.status.length - 1].operatorName}</p>
+                        <p className="text-sm">Approved on: {new Date(selectedSubmission.status[selectedSubmission.status.length - 1].createdAt).toLocaleString()} </p> 
+                      </li>
+                    </ol>
+                  }
+
+                  {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "rejected" &&
+                    <ol className="relative text-gray-500 mb-5 mx-10">
+                      <li className="mb-10 ms-6">
+                        <span className="absolute flex items-center justify-center w-8 h-8 bg-red-500 rounded-full -start-4 ring-4 ring-white ">
+                          <GrRevert color='white' size={20} />
+                        </span>
+                        <h3 className="text-xl text-red-500 font-bold leading-tight">Rejected</h3>
+                        <p className="text-sm">Rejected by: {selectedSubmission.status[selectedSubmission.status.length - 1].operatorName}</p>
+                        <p className="text-sm">Rejected on: {new Date(selectedSubmission.status[selectedSubmission.status.length - 1].createdAt).toLocaleString()} </p> 
+                        <p className="text-sm">Reverted to: {selectedSubmission.status[selectedSubmission.status.length - 1].operatorName}</p>
+                      </li>
+                    </ol>
+                  }
 
 
                   {/* MODAL FOOTER */}
-                  {
-                    <div className="flex items-center justify-center p-4 md:p-5 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b">
-                    {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
-                    <button
-                      onClick={() => navigate(`/inspect/${selectedSubmission._id}`)}
-                      data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                    >Inspect</button>
-                    <button
-                      data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
-                    >Close</button>
-                  </div>}
+                  {selectedSubmission.comments && selectedSubmission.comments.length >= 0 && (selectedSubmission.status[selectedSubmission.status.length - 1].state == "inspected" || selectedSubmission.status[selectedSubmission.status.length - 1].state == "initiated") &&
+                    <div className="flex items-center w-full justify-center space-x-3 rounded-b">
+                      {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
+                      <button
+                        onClick={() => navigate(`/inspect/${selectedSubmission._id}`)}
+                        data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                      >Inspect</button>
+                      <button
+                      onClick={toggleModalOff}
+                        data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
+                      >Close</button>
+                    </div>}
                 </div>
               </div>
             </div>}
