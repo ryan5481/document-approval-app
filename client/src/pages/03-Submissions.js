@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import { BiSolidArchiveIn } from "react-icons/bi";
 import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
-import { useSelector } from 'react-redux'
-//MODAL CONTENTS
-import { Editor, EditorState, convertFromRaw } from 'draft-js';
 import { FaFilePdf, FaUserCircle } from "react-icons/fa";
 import { MdRocketLaunch } from "react-icons/md";
 import { BsFillCalendarDayFill } from "react-icons/bs";
@@ -13,12 +10,17 @@ import { BsPatchCheckFill } from "react-icons/bs";
 import { GrRevert } from "react-icons/gr";
 import { PiClipboardTextFill } from "react-icons/pi";
 import { AiFillAppstore } from "react-icons/ai";
+import { useSelector } from 'react-redux'
+import { Editor, EditorState, convertFromRaw } from 'draft-js';
+import axios from 'axios';
+
+
 
 const baseUrl = process.env.REACT_APP_BASE_URL
 const itemsPerPage = 10;
 
 function Submissions() {
-  const { userRole, userDept } = useSelector(state => state.user)
+  const { userRole, userDbId, userDept } = useSelector(state => state.user)
   const navigate = useNavigate()
   //GET SUBMISSIONS LIST
   const [submissionsList, setSubmissionsList] = useState([])
@@ -39,10 +41,35 @@ function Submissions() {
     getSubmissions()
   }, [])
 
+  // ARCHIVE
+
+  const archiveDocument = async (selectedSubmission) => {
+    try {
+      const response = await axios.put(`${baseUrl}/update-document-status/${selectedSubmission._id}`,
+        {
+          operator: userDbId,
+          state: "archived",
+        });
+      if (response.status === 200) {
+        // window.location.reload()
+      } else {
+        console.log("Error")
+      }
+    } catch (error) {
+      console.error('Error fetching status:', error);
+    }
+  };
+
   //If userRole === "user", DISPLAY LIST ASSIGNED TO logged in user's department only 
   const filteredSubmissionsListByUserRole = userRole === 'user'
     ? submissionsList.filter(item => item.firstAssigneeDept === userDept)
     : submissionsList;
+
+  const [selectedTopSwitchDataType, setTopSwitchSelectedDataType] = useState("all")
+
+  const getTopSwitchBackgroundColor = (dataType) => {
+    return selectedTopSwitchDataType === dataType ? "bg-blue-700 text-white" : "bg-white text-gray-900";
+  };
 
   ////// FILTER DATA BY STATUS  ////// 
   const [selectedDataType, setSelectedDataType] = useState("all")
@@ -79,8 +106,8 @@ function Submissions() {
   const handleMouseUp = (id) => {
     setTextMouseStates({ ...textMouseStates, [id]: false });
   };
-  const originalBackgroundColor = 'bg-blue-600';
-  const clickedBackgroundColor = 'bg-blue-700';
+  const originalBackgroundColor = 'bg-blue-500';
+  const clickedBackgroundColor = 'bg-blue-600';
 
   //DETAIL MODAL
   const modalRef = useRef(null);
@@ -184,18 +211,33 @@ function Submissions() {
   };
 
   return (
-    <div className=' flex flex-col items-center justify-start bg-slate-700 border-b border-gray-200 min-h-screen'>
+    <div className=' flex flex-col items-center justify-start bg-slate-700  border-gray-200 min-h-screen'>
       {/* ////// FILTER DATA BY STATUS  ////// */}
-      <ul className="flex flex-row text-md font-medium text-center text-gray-500 rounded-lg shadow w-[1200px] mt-5">
+      {/* <ul className="flex flex-row text-md font-medium text-center items-center justify-center text-gray-500 rounded-lg shadow w-[1200px] mb-1 mt-5">
         <li className="w-full">
           <a
             onClick={() => handleItemClick("all")}
-            className={`inline-block w-full p-4 text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200 rounded-s-lg ${getBackgroundColor("all")}`}
-          >All</a>
+            className={`flex w-full h-10 items-center justify-center text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200 rounded-tl-lg ${getTopSwitchBackgroundColor("all")}`}
+          >All Submissions</a>
         </li>
         <li className="w-full">
           <a
             onClick={() => handleItemClick("all")}
+            className={`flex w-full h-10 items-center justify-center text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200 rounded-tr-lg  ${getTopSwitchBackgroundColor("initiated")}`}
+          >My Activity</a>
+        </li>
+      </ul> */}
+
+      <ul className="flex flex-row text-md font-medium text-center text-gray-500 mt-5 rounded-lg shadow w-[1200px]">
+        <li className="w-full">
+          <a
+            onClick={() => handleItemClick("all")}
+            className={`inline-block w-full p-4 text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200 rounded-l-lg ${getBackgroundColor("all")}`}
+          >All</a>
+        </li>
+        <li className="w-full">
+          <a
+            onClick={() => handleItemClick("initiated")}
             className={`inline-block w-full p-4 text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200  ${getBackgroundColor("initiated")}`}
           >Initiated</a>
         </li>
@@ -214,9 +256,17 @@ function Submissions() {
         <li className="w-full">
           <a
             onClick={() => handleItemClick("rejected")}
-            className={`inline-block w-full p-4 hover:text-white hover:bg-blue-500 border-s-0 border-gray-200 rounded-e-lg ${getBackgroundColor("rejected")}`}
+            className={`inline-block w-full p-4 hover:text-white hover:bg-blue-500 border-s-0 border-gray-200 ${userRole == "user" ? "rounded-r-lg" : "border-r border-gray-200"}  ${getBackgroundColor("rejected")}`}
           >Rejected</a>
         </li>
+        {/* SHOW ARCHIVED DOCUMENT TO ALL USERS except userRole == user */}
+        {userRole !== "user" &&
+          <li className="w-full">
+            <a
+              onClick={() => handleItemClick("archived")}
+              className={`inline-block w-full p-4 text-red-500 hover:text-white hover:bg-blue-500 border-s-0 border-gray-200 rounded-r-lg ${getBackgroundColor("archived")}`}
+            >Archived</a>
+          </li>}
       </ul>
 
       {/* DATA DIEPLAY */}
@@ -230,7 +280,7 @@ function Submissions() {
 
           {/* TABLE HEADER */}
           {paginatedList.length > 0 &&
-            <div className={`w-[1200px] flex  items-center bg-blue-600 font-bold text-white rounded-t-lg cursor-pointer`} >
+            <div className={`w-[1200px] flex  items-center bg-blue-500 font-bold text-white rounded-t-lg cursor-pointer`} >
               <a
                 className='p-2 w-10 border-r-[1px]'
               >SN</a>
@@ -420,9 +470,9 @@ function Submissions() {
                             <div className='bg-gray-100 px-5 rounded-md'>
                               <div className='flex flex-col py-2 text-xs mb-2'>
                                 <div className='flex flex-row gap-5' >
-                                  <span className='flex items-center justify-center gap-2 text-[14px]'> <FaUserCircle  /> <a>{item?.InspectorId.fullName}</a></span>
+                                  <span className='flex items-center justify-center gap-2 text-[14px]'> <FaUserCircle /> <a>{item?.fullName}</a></span>
                                   {item?.InspectorId.department &&
-                                    <span className='flex items-center justify-center gap-2 text-[14px]'> <AiFillAppstore  /> <a>{item?.InspectorId.department || item?.InspectorId.userRole}</a>
+                                    <span className='flex items-center justify-center gap-2 text-[14px]'> <AiFillAppstore /> <a>{item?.department || item?.InspectorId.userRole}</a>
                                     </span>}
                                   {/* <a>{new Date(item?.createdAt).toLocaleString()}</a> */}
                                   <span className='flex items-center justify-center gap-2 text-[18px]'> <BsFillCalendarDayFill /> <a>{new Date(item?.createdAt).toLocaleString()}</a>
@@ -449,18 +499,33 @@ function Submissions() {
                     }
                   </ol>
 
-                  {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "approved" &&
-                    <ol className="relative text-gray-500 mb-5 mx-10">
+                  {/* APPROVED STAMP */}
+                  {selectedSubmission && selectedSubmission.status && selectedSubmission.status.find(statusObject => statusObject.state === 'approved') &&
+                    <ol className={`relative text-gray-500 mx-10 ${selectedSubmission.status.find(statusObject => statusObject.state === 'archived') && "border-s-2 border-blue-500"}`}>
                       <li className="mb-10 ms-6">
                         <BsPatchCheckFill size={30} className="absolute flex items-center justify-center text-green-500 bg-white  w-8 h-8rounded-full -start-4 ring-4 ring-white " />
                         <h3 className="text-xl text-green-500 font-bold leading-tight">Aproved</h3>
-                        <p className="text-sm">Approved by: {selectedSubmission.status[selectedSubmission.status.length - 1].operatorName}</p>
-                        <p className="text-sm">Approved on: {new Date(selectedSubmission.status[selectedSubmission.status.length - 1].createdAt).toLocaleString()} </p> 
+                        <p className="text-sm">Approved by: {selectedSubmission.status[selectedSubmission.status.length - 2].operatorName}</p>
+                        <p className="text-sm">Approved on: {new Date(selectedSubmission.status[selectedSubmission.status.length - 2].createdAt).toLocaleString()} </p>
                       </li>
                     </ol>
                   }
 
-                  {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "rejected" &&
+                  {/* ARCHIVED STAMP */}
+                  {(selectedSubmission && selectedSubmission.status && selectedSubmission.status.find(statusObject => statusObject.state === 'approved') && selectedSubmission && selectedSubmission.status && selectedSubmission.status.find(statusObject => statusObject.state === 'archived')) &&
+                    <ol className="relative text-gray-500 mb-5 mx-10">
+                      <li className="mb-10 ms-6">
+                        <span className="absolute flex items-center justify-center w-8 h-8 bg-red-500 rounded-full -start-4 ring-4 ring-white ">
+                          <BiSolidArchiveIn color='white' size={20} />
+                        </span>
+                        <h3 className="text-xl text-red-500 font-bold leading-tight">Archived</h3>
+                        <p className="text-sm">Archived by: {selectedSubmission.status[selectedSubmission.status.length - 1].operatorName}</p>
+                        <p className="text-sm">Archived on: {new Date(selectedSubmission.status[selectedSubmission.status.length - 1].createdAt).toLocaleString()} </p>
+                      </li>
+                    </ol>
+                  }
+
+                  {selectedSubmission && selectedSubmission.status && selectedSubmission.status.find(statusObject => statusObject.state === 'rejected') &&
                     <ol className="relative text-gray-500 mb-5 mx-10">
                       <li className="mb-10 ms-6">
                         <span className="absolute flex items-center justify-center w-8 h-8 bg-red-500 rounded-full -start-4 ring-4 ring-white ">
@@ -468,12 +533,32 @@ function Submissions() {
                         </span>
                         <h3 className="text-xl text-red-500 font-bold leading-tight">Rejected</h3>
                         <p className="text-sm">Rejected by: {selectedSubmission.status[selectedSubmission.status.length - 1].operatorName}</p>
-                        <p className="text-sm">Rejected on: {new Date(selectedSubmission.status[selectedSubmission.status.length - 1].createdAt).toLocaleString()} </p> 
-                        <p className="text-sm">Reverted to: {selectedSubmission.status[selectedSubmission.status.length - 1].operatorName}</p>
+                        <p className="text-sm">Rejected on: {new Date(selectedSubmission.status[selectedSubmission.status.length - 1].createdAt).toLocaleString()} </p>
+                        <p className="text-sm">Reverted to: {selectedSubmission.status[selectedSubmission.status.length - 1].rejectedToAsigneeName}</p>
                       </li>
                     </ol>
                   }
 
+                  {/* {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "approved" &&
+                    <button
+                      onClick={() => archiveDocument(selectedSubmission)}
+                      className='w-40 text-white bg-red-500 hover:bg-red-600 rounded-md shadow-md'
+                    >Archive</button>} */}
+
+                  {/* ARCHIVE BUTTON */}
+                  {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "approved" &&
+                  <div className="flex items-center w-full justify-center space-x-3 rounded-b">
+                    {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
+                    <button
+                    onClick={() => archiveDocument(selectedSubmission)}
+                    className='w-52 text-white bg-red-500 hover:bg-red-600 rounded-md shadow-md'
+                    >Archive Document</button>
+                    <button
+                      // onClick={toggleModalOff}
+                      className="w-52 text-white bg-gray-400 hover:bg-gray-500  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
+                    >Close</button>
+                  </div>
+                  }
 
                   {/* MODAL FOOTER */}
                   {selectedSubmission.comments && selectedSubmission.comments.length >= 0 && (selectedSubmission.status[selectedSubmission.status.length - 1].state == "inspected" || selectedSubmission.status[selectedSubmission.status.length - 1].state == "initiated") &&
@@ -484,7 +569,7 @@ function Submissions() {
                         data-modal-hide="extralarge-modal" type="button" className="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                       >Inspect</button>
                       <button
-                      onClick={toggleModalOff}
+                        onClick={toggleModalOff}
                         data-modal-hide="extralarge-modal" type="button" className="ms-3 text-white bg-red-500 hover:bg-red-600  rounded-lg text-sm font-medium px-5 py-2.5 focus:z-10"
                       >Close</button>
                     </div>}
