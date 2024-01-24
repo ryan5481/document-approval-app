@@ -225,7 +225,6 @@ const Inspect = () => {
 
       {/* //////// COMMENTS ////////// */}
       <div className='flex flex-col gap-5 w-full bg-gray-200 px-10 py-5 rounded-md' >
-        {/* INSTRUCTION VIEWER */}
         <div className='flex flex-col gap-2'>
           {data.comments &&
             data.comments.length > 0 ?

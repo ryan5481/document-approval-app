@@ -58,18 +58,27 @@ const GetSubmissions = async (req, res) => {
             const populatedDataWithInitiatorName = await Promise.all(foundData.map(async item => {
                 const user = await User.findById(item.initiatorId);
                 if (user) {
-                    const populatedStatus = await Promise.all(item.status.map(async statusItem => {
+                    const populatedStatus = await Promise.all(item.status.map(async (statusItem, index) => {
                         const operatorUser = await User.findById(statusItem.operator);
-                        const rejectedToUser = await User.findById(statusItem?.rejectedToAsignee);
                         if (operatorUser) {
-                            return {
+                            const updatedStatusItem = {
                                 ...statusItem.toObject(),
                                 operatorName: operatorUser.fullName,
                                 operatorUserDept: operatorUser?.department,
                                 operatorUserRole: operatorUser?.userRole,
-                                // revertedTo: rejectedToUser?.fullName
-
                             };
+
+                            // Check if the last object in the status array has rejectedToAsignee
+                            if (index === item.status.length - 1 && statusItem.rejectedToAsignee) {
+                                const rejectedToAsigneeUser = await User.findById(statusItem.rejectedToAsignee);
+                                if (rejectedToAsigneeUser) {
+                                    updatedStatusItem.rejectedToAsigneeName = rejectedToAsigneeUser.fullName;
+                                } else {
+                                    console.error(`User with _id ${statusItem.rejectedToAsignee} not found`);
+                                }
+                            }
+
+                            return updatedStatusItem;
                         } else {
                             console.error(`User with _id ${statusItem.operator} not found`);
                             return statusItem.toObject();
@@ -99,6 +108,8 @@ const GetSubmissions = async (req, res) => {
         return res.status(500).json({ msg: "Internal server error." });
     }
 };
+
+
 
 
 const GetASubmissionById = async (req, res) => {
