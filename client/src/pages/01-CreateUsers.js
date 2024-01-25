@@ -1,7 +1,7 @@
 import React from 'react'
 import SignupUserForm from '../components/forms/signupUserForm'
 
-function Dashboard() {
+function CreateUsers() {
   return (
     <div>
       <SignupUserForm />
@@ -9,4 +9,4 @@ function Dashboard() {
   )
 }
 
-export default Dashboard
+export default CreateUsers

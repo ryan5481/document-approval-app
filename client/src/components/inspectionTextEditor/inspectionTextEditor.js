@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import {
     Editor,
@@ -16,6 +16,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL
 
 
 const InspectionTextEditor = () => {
+    const navigate = useNavigate()
     const { userDbId, fullName } = useSelector(state => state.user)
 
     const [editorState, setEditorState] = useState(
@@ -65,7 +66,7 @@ const InspectionTextEditor = () => {
                     InspectorId: userDbId,
                 });
             if (response.status === 200) {
-                // window.location.reload()
+                window.location.reload()
             } else {
                 console.log("Error")
             }

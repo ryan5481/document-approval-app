@@ -212,22 +212,6 @@ function Submissions() {
 
   return (
     <div className=' flex flex-col items-center justify-start bg-slate-700  border-gray-200 min-h-screen'>
-      {/* ////// FILTER DATA BY STATUS  ////// */}
-      {/* <ul className="flex flex-row text-md font-medium text-center items-center justify-center text-gray-500 rounded-lg shadow w-[1200px] mb-1 mt-5">
-        <li className="w-full">
-          <a
-            onClick={() => handleItemClick("all")}
-            className={`flex w-full h-10 items-center justify-center text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200 rounded-tl-lg ${getTopSwitchBackgroundColor("all")}`}
-          >All Submissions</a>
-        </li>
-        <li className="w-full">
-          <a
-            onClick={() => handleItemClick("all")}
-            className={`flex w-full h-10 items-center justify-center text-gray-900 hover:text-white hover:bg-blue-500 border-r border-gray-200 rounded-tr-lg  ${getTopSwitchBackgroundColor("initiated")}`}
-          >My Activity</a>
-        </li>
-      </ul> */}
-
       <ul className="flex flex-row text-md font-medium text-center text-gray-500 mt-5 rounded-lg shadow w-[1200px]">
         <li className="w-full">
           <a
@@ -416,14 +400,9 @@ function Submissions() {
                           <a className="leading-relaxed text-black font-bold">
                             {selectedSubmission.title}
                           </a>
-                          {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "initiated" &&
-                            <span>Status: <a className='text-blue-500' >Initiated</a></span>}
-                          {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "inspected" &&
-                            <span>Status: <a className='text-blue-500' >Inspected</a></span>}
-                          {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "approved" &&
-                            <span>Status: <a className='text-green-500' >Approved</a></span>}
-                          {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "rejected" &&
-                            <span>Status: <a className='text-red-500' >Rejected</a></span>}
+                       
+                          {selectedSubmission && selectedSubmission.status &&
+                            <span className='text-black' >Status: <a className='text-blue-500 font-bold' >{selectedSubmission.status[selectedSubmission.status.length - 1].state}</a></span>}
                         </div>
 
                         <div className='flex flex-row gap-2'>
@@ -546,7 +525,7 @@ function Submissions() {
                     >Archive</button>} */}
 
                   {/* ARCHIVE BUTTON */}
-                  {selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "approved" &&
+                  { userRole !== "user" && selectedSubmission && selectedSubmission.status && selectedSubmission.status[selectedSubmission.status.length - 1].state == "approved" &&
                   <div className="flex items-center w-full justify-center space-x-3 rounded-b">
                     {/* <button data-modal-hide="extralarge-modal" type="button" className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Approve</button> */}
                     <button
