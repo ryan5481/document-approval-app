@@ -2,19 +2,23 @@ const mongoose = require ("mongoose");
 
 const userSchema = ({
 
-    userRole: {
-        type: String,
-    },
-    
     fullName: {
         type: String,
     },
-
+    
     email: {
         type: String,
     },
     
+    phoneNumber: {
+        type: String,
+    },
+    
     password: {
+        type: String,
+    },
+
+    userRole: {
         type: String,
     },
 

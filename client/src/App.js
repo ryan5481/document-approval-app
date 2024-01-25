@@ -1,9 +1,4 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Login from "./pages/00-login.js"
-import Dashboard from "./pages/01-CreateUser.js"
-import Initiate from "./pages/02-Initiate.js"
-import Submissions from "./pages/03-Submissions.js"
-import PageNotFound from "./pages/99-notFound.js";
 import './App.css';
 import { useSelector } from 'react-redux'
 

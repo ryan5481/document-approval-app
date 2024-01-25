@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FaFilePdf, FaExternalLinkSquareAlt, FaUserCircle, FaNetworkWired } from "react-icons/fa";
 import { BsFillCalendarDayFill } from "react-icons/bs";
 import { PiSealCheckFill, PiArrowUUpLeftBold, PiUserSquareFill } from "react-icons/pi";
@@ -13,6 +13,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL
 
 
 const Inspect = () => {
+  const navigate = useNavigate()
   // SHOW HIDE COMMENT BOX
   const [showCommentBox, setShowCommentBox] = useState(false)
   ///////// GET SUBMISSIONS LIST /////////
@@ -47,7 +48,7 @@ const Inspect = () => {
           rejectedToAsignee: rejectedToAsignee,
         });
       if (response.status === 200) {
-        // window.location.reload()
+        navigate("/submissions")
       } else {
         console.log("Error")
       }

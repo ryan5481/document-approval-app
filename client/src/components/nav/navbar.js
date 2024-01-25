@@ -18,7 +18,7 @@ const Navbar = () => {
             },
             {
                 label: "Users",
-                href: "/create-user",
+                href: "/users",
             },
             {
                 label: "Initiate",

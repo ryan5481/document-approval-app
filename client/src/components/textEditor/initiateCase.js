@@ -13,6 +13,7 @@ import "./TextEditor.css";
 const baseUrl = process.env.REACT_APP_BASE_URL
 
 const InitiateCase = () => {
+  const navigate = useNavigate()
   //EDITOR COMPONENTS
   const [editorState, setEditorState] = useState(
     EditorState.createWithContent(
@@ -159,7 +160,7 @@ const InitiateCase = () => {
 
       if (res.status === 200) {
         // const response = await res.json();
-        // navigate("/submissions");
+        navigate("/submissions");
       } else {
         console.log("An error occurred.");
       }
